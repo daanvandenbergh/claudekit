@@ -1,0 +1,28 @@
+{
+    "name": "@daanvandenbergh/claudekit",
+    "version": "1.0.0",
+    "description": "Not a wrapper around the Claude/Anthropic API - a content-only set of reusable Claude Code skills (TypeScript audits, legal policy writing, SEO, agent memory) and CLAUDE.md rule snippets, linked into a project's .claude/skills.",
+    "license": "UNLICENSED",
+    "author": "Daan van den Bergh",
+    "type": "module",
+    "files": [
+        "skills",
+        "rules"
+    ],
+    "publishConfig": {
+        "access": "public"
+    },
+    "scripts": {
+        "push-and-publish": "git add -A && git commit -m 'Updates' && npm version patch && npm publish && git push -u origin main"
+    },
+    "keywords": [
+        "claude-code",
+        "claude",
+        "skills",
+        "audit",
+        "policy"
+    ],
+    "devDependencies": {
+        "@daanvandenbergh/scribekit": "^1.0.0"
+    }
+}
