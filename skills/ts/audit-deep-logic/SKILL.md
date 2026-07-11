@@ -71,7 +71,7 @@ Everything after the command is one raw string. Parse it in prose:
 4. `--out <path>` is off by default. Without it, the Phase-4 report is emitted **inline in the
    response** and nothing is written to disk. Pass `--out <path>` only when you want a durable,
    committed report (e.g. for cross-session multi-pass convergence or a persistent accepted-risk
-   ledger); the path is yours to choose - the skill never assumes `docs/architecture/`.
+   ledger); the path is yours to choose - the skill never assumes `claude/audit-deep-logic/architecture/`.
 
 ---
 
