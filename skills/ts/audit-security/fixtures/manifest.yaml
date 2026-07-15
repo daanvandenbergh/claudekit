@@ -1,0 +1,132 @@
+# Ground-truth manifest for the audit-security self-test + recall canary (reference/self-test.md).
+# 8 planted bugs, each in a lens that fails SILENTLY under a degraded worker (cross-file,
+# sibling-enumeration, declaration-scope, stored/2nd-order taint, absent-code, git-history,
+# protocol-absent-check, error-path) - exactly what a truncated-context / cheap-model / distracted
+# worker loses first, and what a per-line CWE scanner (with its own canary) does NOT cover.
+#
+# match_key defines a "kill": a report counts as catching a fixture iff it names the lens, the
+# file, and the sink symbol. Prose is NEVER matched (LLM output varies run to run).
+# traps[] are benign look-alikes that must NOT be reported (the precision denominator).
+
+version: 1                         # self-test recall is checkpointed against this (the ratchet)
+match_key: [lens, file_anchor, sink_anchor]
+
+fixtures:
+  - id: NOSQL-SMUGGLE-01
+    lens: injection/nosql          # SEC-INJ (cross-file taint)
+    cwe: CWE-943
+    silent_under_degradation: cross-file   # truncated-context workers drop the cross-file half first
+    files: [NOSQL-SMUGGLE-01/route.ts, NOSQL-SMUGGLE-01/customers.ts]
+    planted:
+      source: "route.ts: req.body.filter passed on with no schema"
+      sink:   "customers.ts: findOne({ ...filter }) - operator smuggle"
+      sink_anchor: findByQuery
+    expected_finding:
+      must_name_file: NOSQL-SMUGGLE-01/customers.ts
+      must_name_sink: "spread of an unvalidated request body into a Mongo filter"
+      must_identify: "query-operator injection / NoSQL operator smuggle"
+    severity_floor: Critical
+    traps:
+      - "customers.ts: findOne({ orgId }) where orgId is a validated string - flagging it is a false positive"
+
+  - id: AUTHZ-SIBLING-02
+    lens: authz/surface            # SEC-AC (sibling entrypoint enumeration)
+    cwe: CWE-862
+    silent_under_degradation: sibling-enumeration
+    files: [AUTHZ-SIBLING-02/actions.ts]
+    planted:
+      sink: "setRoleAction has no requireStaff; inviteAction (its sibling) does - the sibling is ungated"
+      sink_anchor: setRoleAction
+    expected_finding:
+      must_name_file: AUTHZ-SIBLING-02/actions.ts
+      must_identify: "server action reachable without the staff gate its sibling enforces (BFLA)"
+    severity_floor: Critical
+    traps:
+      - "inviteAction is correctly gated by requireStaff - do not flag it"
+
+  - id: CRYPTO-STATIC-IV-03
+    lens: crypto                   # SEC-SEC (declaration-scope / lifetime)
+    cwe: CWE-329
+    silent_under_degradation: scope-of-declaration
+    files: [CRYPTO-STATIC-IV-03/seal.ts]
+    planted:
+      sink: "IV is a module-scope const, reused across every encrypt() call"
+      sink_anchor: SEAL_IV
+    expected_finding:
+      must_name_file: CRYPTO-STATIC-IV-03/seal.ts
+      must_identify: "IV/nonce reused across encryptions (module-scope constant), not one fresh IV per call"
+    severity_floor: High
+
+  - id: XSS-STORED-04
+    lens: xss/stored               # SEC-WEB (2nd-order taint through persistence)
+    cwe: CWE-79
+    silent_under_degradation: stored-2nd-order
+    files: [XSS-STORED-04/save.ts, XSS-STORED-04/render.tsx]
+    planted:
+      source: "save.ts persists req.body.note raw"
+      sink:   "render.tsx renders the stored note via dangerouslySetInnerHTML"
+      sink_anchor: NoteView
+    expected_finding:
+      must_name_file: XSS-STORED-04/render.tsx
+      must_identify: "stored/second-order XSS - request-written DB field rendered unescaped"
+    severity_floor: High
+    traps:
+      - "render.tsx renders {title} via plain JSX interpolation - auto-escaped, not a finding"
+
+  - id: WEBHOOK-IDEMP-05
+    lens: idempotency              # SEC-BL (absent-code reasoning)
+    cwe: CWE-799
+    silent_under_degradation: absent-code    # the bug is a MISSING dedup, nothing to pattern-match on
+    files: [WEBHOOK-IDEMP-05/webhook.ts]
+    planted:
+      sink: "handleWebhook applies the side effect with no unique-key dedup on the event id"
+      sink_anchor: handleWebhook
+    expected_finding:
+      must_name_file: WEBHOOK-IDEMP-05/webhook.ts
+      must_identify: "at-least-once webhook side effect with no idempotency key - replay double-applies"
+    severity_floor: High
+
+  - id: SECRET-HISTORY-06
+    lens: secret/history           # secret scan (git HISTORY, not the worktree)
+    cwe: CWE-798
+    silent_under_degradation: git-history    # gone from HEAD; a working-tree-only scan cannot see it
+    files: [SECRET-HISTORY-06/config.ts]
+    planted:
+      sink: "a live-format credential committed in an earlier commit, removed from HEAD"
+      sink_anchor: config.ts
+    expected_finding:
+      must_name_file: SECRET-HISTORY-06/config.ts
+      must_identify: "secret present in git history though absent from the working tree"
+    severity_floor: Critical
+    # SETUP (documented, not shipped): a fresh checkout carries no history, so this fixture cannot
+    # ship the leak in-tree. To stage it, the harness commits config.ts WITH a fake but
+    # live-FORMAT key (e.g. AKIA + 16 chars, or a mongodb+srv:// URI with creds), then a second
+    # commit removes it - so `gitleaks git` finds it and `gitleaks dir` does not. NEVER commit a
+    # real credential; the staged value must be synthetic. The HEAD-committed config.ts in this
+    # dir holds only a placeholder + this note.
+
+  - id: OAUTH-STATE-07
+    lens: csrf/oauth               # SEC-AUTH (protocol absent-check)
+    cwe: CWE-352
+    silent_under_degradation: protocol-absent-check
+    files: [OAUTH-STATE-07/callback.ts]
+    planted:
+      sink: "the OAuth callback reads code and mints a session without generating/validating state"
+      sink_anchor: oauthCallback
+    expected_finding:
+      must_name_file: OAUTH-STATE-07/callback.ts
+      must_identify: "OAuth callback with no state parameter - login CSRF / code injection"
+    severity_floor: High
+
+  - id: FAIL-OPEN-08
+    lens: fail-open                # SEC-ERR (error path)
+    cwe: CWE-636
+    silent_under_degradation: error-path
+    files: [FAIL-OPEN-08/authorize.ts]
+    planted:
+      sink: "the catch around the authorization check returns true (allow) on error"
+      sink_anchor: assertAuthorized
+    expected_finding:
+      must_name_file: FAIL-OPEN-08/authorize.ts
+      must_identify: "security decision fails OPEN - the catch defaults to allow"
+    severity_floor: High

@@ -20,6 +20,7 @@ skills/
   ts/      TypeScript / general code-quality skills
     audit             phased, production-grade single-module audit (security, quality, logic, tests) that fixes what it finds
     audit-deep-logic  whole-system audit of the bugs that live in the SEAMS between modules
+    audit-security    project-agnostic WHOLE-PROJECT security audit: real scanners (deps/secrets/SAST/IaC) + its own LLM whole-repo review + a threat model + the project's own invariants, adversarially triaged; report-only, --fix opts in
     audit-tests       hunt untested logic and write edge-case-exhaustive unit tests to total coverage
   legal/   legal / compliance skills
     policy-writer     create or verify-and-update code-grounded privacy/cookie/terms/DPA/imprint/AI-disclosure policies
@@ -57,6 +58,9 @@ ln -s ../../node_modules/@daanvandenbergh/claudekit/skills/ts/audit \
 ln -s ../../node_modules/@daanvandenbergh/claudekit/skills/ts/audit-deep-logic \
       .claude/skills/audit-deep-logic
 
+ln -s ../../node_modules/@daanvandenbergh/claudekit/skills/ts/audit-security \
+      .claude/skills/audit-security
+
 ln -s ../../node_modules/@daanvandenbergh/claudekit/skills/ts/audit-tests \
       .claude/skills/audit-tests
 
@@ -92,6 +96,15 @@ the file in `node_modules` so the rule text auto-updates with the package:
 
 Add only the rule files you want; each is self-contained. The path is relative to the
 `CLAUDE.md` file, so keep `CLAUDE.md` at the project root (next to `node_modules`).
+
+Some skills also ship a `claude-rules.md` meant to be imported the same way, so the rule
+rides in context every session (not only when the skill runs). If you use `/audit-security`,
+import its rule so maintaining `claude/audit-security/rules.md` (the project's own security
+invariants) stays a standing obligation:
+
+```md
+@node_modules/@daanvandenbergh/claudekit/skills/ts/audit-security/claude-rules.md
+```
 
 ## Updating
 

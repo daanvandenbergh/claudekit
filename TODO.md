@@ -1,6 +1,19 @@
 # TODO
+To do list.
 
-Dev-only roadmap. Not published (`package.json` `files` ships only `skills/` + `rules/`).
+- [ ] Use Fable to improve the: /audit-security skill
+
+- [ ] Use Fable to improve the: /audit skill
+
+- [ ] Use Fable to improve the: /audit-deep-logic skill
+
+- [ ] Use Fable to improve the: /policy-writer skill
+
+- [ ] Use Fable to improve the: /seo skill
+
+- [ ] Use Fable to improve the: /audit-tests skill
+
+- [ ] Use Fable to improve the: /memory-store skill
 
 ---
 

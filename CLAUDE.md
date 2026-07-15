@@ -7,7 +7,7 @@ Consumers link skills via a symlink into `.claude/skills/` and `@`-import rules 
 own `CLAUDE.md`; see `README.md`.
 
 ## Layout
-- `skills/ts/` - code-quality skills (`audit`, `audit-deep-logic`, `audit-tests`).
+- `skills/ts/` - code-quality skills (`audit`, `audit-deep-logic`, `audit-security`, `audit-tests`).
 - `skills/legal/` - legal/compliance skills (`policy-writer`).
 - `skills/memory/` - agent-memory skills (`memory-store`).
 - `rules/` - standalone CLAUDE.md snippets (`core_principles.md`, `workflow.md`, `todo.md`).
