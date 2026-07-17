@@ -1,6 +1,6 @@
 {
     "name": "@daanvandenbergh/claudekit",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "description": "Reusable Claude Code skills (TypeScript audits, whole-project security audit, legal policy writing, SEO, agent memory) and CLAUDE.md rule snippets. Content-only, no build step: symlink a skill into .claude/skills and @-import rules into your CLAUDE.md.",
     "license": "UNLICENSED",
     "author": "Daan van den Bergh",
