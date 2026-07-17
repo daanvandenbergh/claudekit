@@ -23,6 +23,6 @@
         "policy"
     ],
     "devDependencies": {
-        "@daanvandenbergh/scribekit": "^1.0.0"
+        "@daanvandenbergh/scribekit": "^1.1.3"
     }
 }

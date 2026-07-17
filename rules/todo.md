@@ -1,27 +1,32 @@
 ## Deferred Work (TODO.md)
-`TODO.md` (repo root) tracks work that is needed but cannot be done yet - blocked on a
-missing prerequisite, a file or entrypoint that does not exist, or a later step. When you
-hit such a case, do NOT silently skip it: add a `- [ ]` item to `TODO.md` describing the
-work and what unblocks it. This is not only code - capture **real-world / external
-prerequisites** too, on your own initiative and without being asked. In particular, whenever
-a change **asserts or relies on a fact that is not yet true** - a legal or registration action
-(registering a trade name or entity, appointing a role), an external account, mailbox, DNS
-record or domain, a vendor or dashboard setting, or any manual ops step - add the item that
-makes it true. Rule of thumb: if the code now claims something the real world has not caught
-up to (e.g. the privacy policy states "trading as SwiftGuard" before that trade name is
-registered), that gap is a `TODO.md` item by default. When you have verified an item from the
-list is done, mark it `- [x]`, then delete the line - finished items must not linger. Keep the
-list to genuinely-pending, actionable items.
 
-**Order by what must happen first, not by when you added it.** New items do not have to go at
-the end - insert each one wherever it belongs in the sequence, so a prerequisite sits above the
-work it unblocks and the list reads top-to-bottom as the order things should be done.
+**Fix it now. Deferring is the exception.** When you hit something that needs doing, do it in
+the current change. Only add it to `TODO.md` if it is:
+- **clearly out of scope** - unrelated to the task at hand, or
+- **actually blocked** - a prerequisite that does not exist yet (a missing file or entrypoint,
+  an earlier step, or a real-world action: a registration, account, mailbox, DNS record, vendor
+  setting, or manual ops step).
 
-**Write each item as a copy-paste-ready prompt.** Phrase every `- [ ]` so it can be pasted
-verbatim into a fresh Claude Code session and fixed with no other context. State what to do, the
-exact files/paths/functions involved, what is currently wrong or missing, what "done" looks like,
-and any command to run or check to verify. Be clear, descriptive, and detailed enough to act on
-cold - assume the session has none of the context you have now; a stub like "fix the schema" is
-not enough.
+"Bigger than I feel like doing", "touches other files", "needs a refactor first" are not blocks.
+Do them. A growing `TODO.md` means the bar is being applied too loosely.
 
-**- [ ] Prompt**. If you are fed a prompt that like `- [ ] ...` then check if it isnt an item of the TODO.md list, if so, be sure to remove it when the TODO item was finished.
+Never silently skip: either fix it, or write the item.
+
+**Real-world gaps count as blocked.** If a change asserts a fact that is not yet true - e.g. the
+privacy policy says "trading as SwiftGuard" before that trade name is registered - add the item
+that makes it true, unasked.
+
+**Order by what must happen first**, not by when you added it - a prerequisite sits above the
+work it unblocks.
+
+**Write each item as a copy-paste-ready prompt.** Assume a fresh session with none of your
+context: state what to do, exact files/paths/functions, what is wrong now, what "done" looks
+like, and the command or check that verifies it. "Fix the schema" is not enough.
+
+**Delete finished items.** Once verified done, remove the line - do not leave `- [x]` behind. If
+you are handed a prompt shaped like `- [ ] ...`, check whether it came from `TODO.md` and remove
+it there when done.
+
+**Report every change to the list.** If you touched `TODO.md`, say so in your final message:
+what you added and why it could not be done now, and what you removed as done. One line each.
+Never let the list change silently - the user must be able to see it growing.
