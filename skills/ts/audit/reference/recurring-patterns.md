@@ -35,6 +35,33 @@ thing that makes the audit smarter on the next run instead of starting from zero
   update or a version field.
 - **Both-variants drift.** A fix applied to the create path but not the edit path (or
   forward but not reverse), so one half stays broken.
+- **A "never throws" surface broken by the stringification of its own refusal.** Template
+  literals and `String()` THROW on a Symbol and on a null-prototype/poisoned-`toPrimitive`
+  object, `Object.hasOwn` coerces (and throws on) its key, and `error.message` can be a
+  poisoned getter - so the very code that phrases a refusal or classifies a caught error
+  becomes the exception that escapes. Fix shape: ONE throw-proof safe-stringify chokepoint
+  (fall back to `Object.prototype.toString.call`, which runs no user code) used at every
+  caller-controlled interpolation, and every property read of a caller-returned object done
+  INSIDE the try that guards the caller.
+- **A permission verdict compared by truthiness fails OPEN on junk.** `if (!verdict.allow)`
+  admits `{ allow: "false" }` straight off a JSON wire - the one gate that exists to stop
+  the action then performs it. Compare `=== true`, never truthiness; anything else fails
+  closed.
+- **A type-level exclusion is not an exclusion - widened objects walk past it.**
+  `Omit<T, "field">` + excess-property checks only reject FRESH object literals; a widened
+  variable carrying the banned field assigns fine and the field goes over the wire. If the
+  field is load-bearing, enforce it AGAIN at the runtime chokepoint (drop the key after the
+  spread).
+- **One vendor-SDK option silently disabling another.** e.g. an SDK that ignores its
+  timeout entirely whenever a caller AbortSignal is present - wiring cancellation removes
+  the whole timeout bound. Verify option INTERACTIONS in the SDK's source, not its
+  docblocks; combine with `AbortSignal.any([callerSignal, AbortSignal.timeout(ms)])` when
+  both must hold. Sibling traps: `AbortSignal.timeout()` rejects fractional input, and
+  delays above 2^31-1 ms clamp to ~1 ms - ceil and cap any caller-supplied timeout.
+- **Wire enums outlive the pinned SDK's union.** A status/reason string off the wire can be
+  a value the installed SDK's type union does not know yet; a bare type assertion turns it
+  into a lying "success". Runtime-allowlist the values you handle and fail closed (still
+  reporting any usage/spend already incurred) on novelty.
 
 ## Accepted (do not re-flag)
 

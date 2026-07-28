@@ -90,7 +90,7 @@ by audit impact (indexation-integrity first). `reference/checklist.md` cites the
 ## titles-descriptions
 - [title-link-generation](titles-descriptions/title-link-generation.md) — Google generates the SERP title link from multiple sources and rewrites the <title> for 7 named reasons; fix the cause, not the length. · fact · updated: 2026-07-09
 - [title-uniqueness-duplication](titles-descriptions/title-uniqueness-duplication.md) — Flag missing/empty/duplicate/generic titles; every page needs one unique, descriptive <title> derived from its own content. · procedure · updated: 2026-07-09
-- [meta-description-snippet-role](titles-descriptions/meta-description-snippet-role.md) — Meta description is a CTR/snippet lever, not a ranking factor; Google builds snippets mostly from body content and only uses the description when it describes the page better. · fact · updated: 2026-07-09
+- [meta-description-snippet-role](titles-descriptions/meta-description-snippet-role.md) — Meta description is a CTR/snippet lever, not a ranking factor; Google builds snippets mostly from body content and only uses the description when it describes the page better. Also: order clauses by load-bearing weight instead of trimming to a character count, how to rebut a third-party tool's "too long" warning, and why one char threshold cannot fit every locale. · fact · updated: 2026-07-18
 
 ## architecture
 - [internal-linking](architecture/internal-linking.md) — Internal links must be crawlable <a href> with descriptive anchor text; every page you care about needs ≥1 inbound internal link. · fact · updated: 2026-07-09

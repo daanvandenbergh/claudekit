@@ -273,10 +273,19 @@ repair markup; propose (Tier B) rewrites of existing copy.
   snippet lever and the AI-preview snippet — Google builds the snippet mostly from body content and
   only uses the description when it describes the page better.
 - **Probe:** Extract from every page; flag missing/duplicate. Aim for a snippet-length summary
-  (pixel-width, not an exact character count).
+  (pixel-width, not an exact character count). **Never flag a description for being "too long"** —
+  check its *clause order* instead: truncation eats the tail, so ask "if this is cut, what is lost?"
+  Order offer → place → qualifier → incidental. Well-ordered and 175 chars beats trimmed-to-155 with
+  the payload cut. On multilingual sites, judge **each locale separately** — translations legitimately
+  differ in length, and character counts do not convert across Latin/Cyrillic/CJK glyph widths.
 - **Fix:** **B** — generate **only** by summarizing the page's own visible body ("use only facts on
   the page; invent no price/shipping/feature claims"); ungroundable → `[[NEEDS: ...]]`. Propose the
-  exact text.
+  exact text. **Do not rewrite an existing description merely to shorten it** — only a quality cause
+  (duplicate, ungrounded, keyword list, buried payload) justifies touching human copy.
+- **If the owner brings a third-party tool's "description is too long" warning:** that is a
+  character-count heuristic, not a Google rule — explain the pixel-width reality, confirm the tail is
+  the least load-bearing clause, and leave the copy alone. Complying by trimming is a regression, not
+  a fix. (Same answer for a title-length warning.)
 - **Verify:** Present, unique, grounded in visible content.
 - *Depth:* `knowledge/titles-descriptions/meta-description-snippet-role.md`, `knowledge/foundations/thresholds.md`
 
@@ -723,7 +732,11 @@ Baked in from the maintainer's own SOTA guidance and confirmed by 2026 web resea
 - **Word-count minimums** ("must be 1,500+ words") — not a ranking factor; adding words without
   structure gives ~0 AI-citation lift.
 - **Exact character-count rules for titles/descriptions** — it's **pixel-width, not char count**;
-  Google rewrites most titles, so front-load the payload instead of trimming to a magic number.
+  Google rewrites most titles, so front-load the payload instead of trimming to a magic number. This
+  holds **even when a third-party scanner reports it as an error** ("172 characters — too long"):
+  rebut it, do not comply. Trimming well-ordered copy to hit ~155 deletes real keywords to satisfy a
+  heuristic Google does not apply. Check clause order, not length — and per locale on multilingual
+  sites, where counts differ legitimately and do not convert across scripts (see O2).
 - **Keyword-density targets / stuffing** — measurably *worse* for both ranking and AI citation.
 - **Hand-added JSON-LD as a GEO lever** — controlled tests show ~no citation uplift; emit the schema
   that earns rich results (which the project usually already does) and stop there.
