@@ -8,9 +8,9 @@ own `CLAUDE.md`; see `README.md`.
 
 ## Layout
 - `skills/ts/` - code-quality skills (`audit`, `audit-deep-logic`, `audit-security`, `audit-tests`).
-- `skills/legal/` - legal/compliance skills (`policy-writer`).
 - `skills/memory/` - agent-memory skills (`memory-store`).
-- `rules/` - standalone CLAUDE.md snippets (`core_principles.md`, `workflow.md`, `todo.md`).
+- `rules/` - standalone CLAUDE.md snippets (`core_principles.md`, `workflow.md`, `todo.md`,
+  `active_sessions.md`, `ts_coding_standards.md`, `ts_modular_coding.md`, `audit_security_rules.md`).
 
 ## Conventions
 - **Everything here must be project-agnostic.** Every skill and every rule is published for

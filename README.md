@@ -22,16 +22,19 @@ skills/
     audit-deep-logic  whole-system audit of the bugs that live in the SEAMS between modules
     audit-security    project-agnostic WHOLE-PROJECT security audit: real scanners (deps/secrets/SAST/IaC) + its own LLM whole-repo review + a threat model + the project's own invariants, adversarially triaged; report-only, --fix opts in
     audit-tests       hunt untested logic and write edge-case-exhaustive unit tests to total coverage
-  legal/   legal / compliance skills
-    policy-writer     create or verify-and-update code-grounded privacy/cookie/terms/DPA/imprint/AI-disclosure policies
   memory/  agent-memory skills
     memory-store      persist agent memory (facts, preferences, decisions, project state) into a de-duplicated, agent-readable Markdown store (--store) and keep it organized (--optimize)
   web/     web / SEO skills
     seo               audit the whole site for SEO and auto-fix what's safe (titles, meta, structured data, canonical/robots/sitemap, Core Web Vitals, answer-engine optimization); the de-index-class of changes is always confirmed first, --scan reports only
 rules/     CLAUDE.md snippets you compose into a project's CLAUDE.md
-  core_principles.md  simplicity-first / no-laziness / minimal-impact
-  workflow.md         plan-mode, subagents, self-improvement loop, verification, task management
-  todo.md             the deferred-work (TODO.md) convention
+  core_principles.md        simplicity-first / no-laziness / minimal-impact
+  workflow.md               plan-mode, subagents, self-improvement loop, verification, task management
+  todo.md                   the deferred-work (TODO.md) convention
+  active_sessions.md        the shared claude/active_sessions.md convention for concurrent agents
+  ts_coding_standards.md    TypeScript house style (docstrings, no suppression directives)
+  ts_modular_coding.md      one module, one domain, one public surface
+  audit_security_rules.md   maintaining the project's own silent-failure security invariants (the
+                            standing obligation behind /audit-security)
 ```
 
 ## Install
@@ -64,10 +67,6 @@ ln -s ../../node_modules/@daanvandenbergh/claudekit/skills/ts/audit-security \
 ln -s ../../node_modules/@daanvandenbergh/claudekit/skills/ts/audit-tests \
       .claude/skills/audit-tests
 
-# a legal skill
-ln -s ../../node_modules/@daanvandenbergh/claudekit/skills/legal/policy-writer \
-      .claude/skills/policy-writer
-
 # a memory-store skill
 ln -s ../../node_modules/@daanvandenbergh/claudekit/skills/memory/memory-store \
       .claude/skills/memory-store
@@ -92,19 +91,17 @@ the file in `node_modules` so the rule text auto-updates with the package:
 @node_modules/@daanvandenbergh/claudekit/rules/core_principles.md
 @node_modules/@daanvandenbergh/claudekit/rules/workflow.md
 @node_modules/@daanvandenbergh/claudekit/rules/todo.md
+@node_modules/@daanvandenbergh/claudekit/rules/audit_security_rules.md
 ```
 
 Add only the rule files you want; each is self-contained. The path is relative to the
 `CLAUDE.md` file, so keep `CLAUDE.md` at the project root (next to `node_modules`).
 
-Some skills also ship a `claude-rules.md` meant to be imported the same way, so the rule
-rides in context every session (not only when the skill runs). If you use `/audit-security`,
-import its rule so maintaining `claude/audit-security/rules.md` (the project's own security
-invariants) stays a standing obligation:
-
-```md
-@node_modules/@daanvandenbergh/claudekit/skills/ts/audit-security/claude-rules.md
-```
+`audit_security_rules.md` is the companion to the `/audit-security` skill, but it is a rule and
+not part of the skill: importing it makes maintaining `claude/audit-security/rules.md` (the
+project's own security invariants) a standing obligation every session, not only on the runs
+where the skill happens to fire. Some skills still ship their own `claude-rules.md` alongside
+`SKILL.md`, imported exactly the same way.
 
 ## Updating
 

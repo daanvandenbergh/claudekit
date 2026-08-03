@@ -7,8 +7,6 @@ To do list.
 
 - [ ] Use Fable to improve the: /audit-deep-logic skill
 
-- [ ] Use Fable to improve the: /policy-writer skill
-
 - [ ] Use Fable to improve the: /seo skill
 
 - [ ] Use Fable to improve the: /audit-tests skill

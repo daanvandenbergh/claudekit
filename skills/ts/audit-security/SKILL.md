@@ -133,6 +133,6 @@ its steps. That one-way rule is what lets any phase be revised in isolation.
 - `reference/standards-coverage-map.md` - the ADOPT/REJECT standards table + the OpenCRE cross-map + the finding-tag scheme.
 - `reference/supply-chain-heuristics.md` - the native-builder allowlist, the reachability-downgrade rule, the dependency-confusion/typosquat/license matrix.
 
-The host project maintains its own invariants in `claude/audit-security/rules.md`; `claude-rules.md`
-(sibling to this file) is the `@`-import that makes maintaining it a standing obligation. Run state
+The host project maintains its own invariants in `claude/audit-security/rules.md`; this package's
+`rules/audit_security_rules.md` is the `@`-import that makes maintaining it a standing obligation. Run state
 lives in `claude/audit-security/state/` (gitignored); accepted risks in `claude/audit-security/accepted.md`.

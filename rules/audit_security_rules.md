@@ -16,6 +16,13 @@ file rots the moment the code moves on, so maintaining it is a standing obligati
   every site the rule is in play (the good calls and the broken ones together), with an `expect:`
   count floor and a named `witness:` file. The ✗/✓ pair is load-bearing: it is the few-shot the
   auditing agent pattern-matches against. Write the ✗ from a bug you actually shipped.
+- **If the project ALSO keeps a MECHANICAL copy of an invariant** - a sweep script, a lint rule, a
+  test - **the invariant goes into BOTH registries in the same change.** Adding it to one and not
+  the other yields a rule that fires only for whichever reader happens to run, and the mechanical
+  copy is the half that CANNOT forget, so it is the worst half to be missing. Set any count floor
+  from the REAL number you just measured, never a guess. A stale mechanical entry means the RULE
+  broke, not the code - fix the entry, never lower the floor to quiet it. And when a rule graduates
+  into a red test, retire it from BOTH.
 - **A rule whose hunt matches nothing, or whose `witness:` no longer resolves, is STALE - not
   passing.** The code it guarded moved or was renamed, so the rule now silently checks nothing. Fix
   the rule (or graduate it); a rule that reads as a pass while checking nothing is worse than no rule.
