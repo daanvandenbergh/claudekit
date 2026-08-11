@@ -1,5 +1,5 @@
-## Active Sessions (claude/active_sessions.md)
-Several agents may work in this repo at once. `claude/active_sessions.md` is the shared
+## Active Sessions (.agent/active_sessions.md)
+Several agents may work in this repo at once. `.agent/active_sessions.md` is the shared
 list of what each one is currently doing, so an agent that sees unexpected edits can find
 out who is making them. Keep it accurate at all times - a stale entry is worse than none.
 
@@ -25,7 +25,7 @@ Get the date with `date -u +%F` - never guess it.
 - **Whenever you read or write the file, delete every entry whose date is more than 7 days
   old.** Always - no exceptions, even if the entry is not yours. That session is gone; the
   line is stale.
-- If the file or `claude/` does not exist yet, create it.
+- If the file or `.agent/` does not exist yet, create it.
 
 **Task description.** One line, concrete enough for another agent to tell whether your work
 overlaps with theirs: what you are changing and where, e.g.

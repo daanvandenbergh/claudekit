@@ -1,6 +1,6 @@
 # @daanvandenbergh/claudekit
 
-![](claude/scribekit-hero/readme/hero.png)
+![](.agent/scribekit-hero/readme/hero.png)
 
 > **This is not an SDK and not a wrapper around the Claude / Anthropic API.** It ships no
 > runtime code and makes no API calls. It's a content-only collection of reusable
@@ -30,7 +30,7 @@ rules/     CLAUDE.md snippets you compose into a project's CLAUDE.md
   core_principles.md        simplicity-first / no-laziness / minimal-impact
   workflow.md               plan-mode, subagents, self-improvement loop, verification, task management
   todo.md                   the deferred-work (TODO.md) convention
-  active_sessions.md        the shared claude/active_sessions.md convention for concurrent agents
+  active_sessions.md        the shared .agent/active_sessions.md convention for concurrent agents
   ts_coding_standards.md    TypeScript house style (docstrings, no suppression directives)
   ts_modular_coding.md      one module, one domain, one public surface
   audit_security_rules.md   maintaining the project's own silent-failure security invariants (the
@@ -98,7 +98,7 @@ Add only the rule files you want; each is self-contained. The path is relative t
 `CLAUDE.md` file, so keep `CLAUDE.md` at the project root (next to `node_modules`).
 
 `audit_security_rules.md` is the companion to the `/audit-security` skill, but it is a rule and
-not part of the skill: importing it makes maintaining `claude/audit-security/rules.md` (the
+not part of the skill: importing it makes maintaining `.agent/audit-security/rules.md` (the
 project's own security invariants) a standing obligation every session, not only on the runs
 where the skill happens to fire. Some skills still ship their own `claude-rules.md` alongside
 `SKILL.md`, imported exactly the same way.

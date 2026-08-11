@@ -83,9 +83,9 @@ means the run does not start.
 
 ## 00.4 Load prior state
 
-Read `claude/audit-security/rules.md` (the project invariants - Phase 30 uses it; if absent, Phase
-30 offers to bootstrap it), `claude/audit-security/accepted.md` (accepted risks / proven false
-positives - Phase 50 applies them), and `claude/audit-security/state/` if resuming or running
+Read `.agent/audit-security/rules.md` (the project invariants - Phase 30 uses it; if absent, Phase
+30 offers to bootstrap it), `.agent/audit-security/accepted.md` (accepted risks / proven false
+positives - Phase 50 applies them), and `.agent/audit-security/state/` if resuming or running
 `--since` (`reference/orchestration.md`). If `--out <path>` was given and a prior report exists there,
 read it only for the pass number and the trend, never as a "these areas are clean" filter.
 

@@ -1,6 +1,6 @@
-## Security invariants (claude/audit-security/rules.md)
+## Security invariants (.agent/audit-security/rules.md)
 
-This project's own silent-failure security invariants live in `claude/audit-security/rules.md` -
+This project's own silent-failure security invariants live in `.agent/audit-security/rules.md` -
 the rules a generic scanner will NEVER find because they are ours (tenant-scope, the deletion
 cascade, an operator smuggled from a JSON body into a query filter, a value spliced into a pipeline
 update without `$literal`, "refund only what you can prove was never sent"). The `/audit-security`
@@ -32,10 +32,10 @@ file rots the moment the code moves on, so maintaining it is a standing obligati
   verifies the test exists with a guard of its own. The genuinely semantic rules ("assume the money
   is gone when you cannot tell") stay - a rules file whose survivors are all semantic has done its job.
 - **Never delete a rule to make the audit pass.** A rule you cannot satisfy is a finding about the
-  code, or an accepted risk recorded in `claude/audit-security/accepted.md` with a reason that names
+  code, or an accepted risk recorded in `.agent/audit-security/accepted.md` with a reason that names
   the compensating control - never a line to quietly remove.
 
-If `claude/audit-security/rules.md` does not exist yet, run `/audit-security` - its Phase 30 offers
+If `.agent/audit-security/rules.md` does not exist yet, run `/audit-security` - its Phase 30 offers
 to bootstrap the file by reading this project's past audit reports, its most-fixed files, its test
 suite, and its docs, and proposing the invariants it infers (each shown only after its hunt has run
 and found real candidates). Keep the ones that are real.

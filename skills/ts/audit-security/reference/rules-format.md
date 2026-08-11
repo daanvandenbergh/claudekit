@@ -1,4 +1,4 @@
-# The project invariants file - `claude/audit-security/rules.md`
+# The project invariants file - `.agent/audit-security/rules.md`
 
 The rules a generic scanner will NEVER find, because they are *this project's own*: tenant-scope, the deletion
 cascade, `$literal` in a pipeline update, "refund only what you can prove was never sent." Every one is
@@ -6,8 +6,8 @@ exploitable, every one fails SILENTLY (violating it turns no test red and throws
 any ruleset on earth. Phase 30 hunts them every run. This file is the spec for how they are written, hunted,
 kept honest, and eventually retired.
 
-The consumer authors `claude/audit-security/rules.md` (note: `claude/`, not `.claude/`). If it is absent, the
-skill offers to bootstrap it (below). `claude/audit-security/accepted.md` (machine-written) holds the accepted
+The consumer authors `.agent/audit-security/rules.md` (note: `.agent/`, not `.claude/`). If it is absent, the
+skill offers to bootstrap it (below). `.agent/audit-security/accepted.md` (machine-written) holds the accepted
 risks.
 
 ---
@@ -141,7 +141,7 @@ The skill does **not** shrug and fall back to generic scanning. It says: *"I hav
 project. Generic checks find generic bugs. Here are the ones I think your codebase actually depends on."*
 Evidence sources, in descending credibility:
 
-1. **Past audit reports** (`last_audit.md`, `claude/reports/`). **A bug that already shipped is a proven
+1. **Past audit reports** (`last_audit.md`, `.agent/reports/`). **A bug that already shipped is a proven
    invariant** - the highest-quality signal in the building, and nothing else is looking at it.
 2. **Git history - the files with the most fix commits, and every revert.** A function fixed four times has an
    invariant nobody wrote down.
@@ -268,7 +268,7 @@ set-difference: the agent is the join engine, and the prose already says "the tw
 
 ---
 
-## `claude/audit-security/accepted.md` - accepted risks, expiring on CODE CHANGE not a date
+## `.agent/audit-security/accepted.md` - accepted risks, expiring on CODE CHANGE not a date
 
 Same directory, separate file (two files drift; the pardon outlives the law). **Machine-written only** - a
 hand-written suppression is a footgun, because the fingerprint has to be right. Keyed on **rule-id + path +

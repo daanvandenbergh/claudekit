@@ -21,7 +21,7 @@ then apply, grounded-only · **C** = de-index class, **never silent**, confirm b
 Run every check against every in-scope template class (or once site-wide where noted). A check that
 is genuinely N/A is a **one-line documented skip**, never a silent omission. Assess against
 **rendered** output; if only source is available, mark render-dependent findings
-"source-level, unverified". Respect `claude/seo/decisions.md` — skip suppressed choices, never
+"source-level, unverified". Respect `.agent/seo/decisions.md` — skip suppressed choices, never
 re-propose a rejected fix. Phase 0 (stack detection) resolves the generator, head-injection
 mechanism, config surfaces, and base-URL config that every fix below relies on — SEO signals are
 *emitted*, not typed as literal tags, so probe the rendered output, not the source template.
@@ -197,7 +197,7 @@ with the warning). Where the "correct" value is not unambiguous from Phase 0, do
   crawlers evade blocks entirely (real enforcement is IP/WAF/edge, not a `Disallow` line).
 - **Probe:** Parse `robots.txt` per user-agent and classify each blocked agent into its tier before flagging.
 - **Fix:** **Flag only**, never auto-unblock — allow/deny is a business/legal choice; surface the tier and
-  its citation cost, confirm intent, and record the decision in `claude/seo/decisions.md`.
+  its citation cost, confirm intent, and record the decision in `.agent/seo/decisions.md`.
 - *Depth:* `knowledge/answer-engines/ai-crawlers.md`, `knowledge/robots-ai-crawlers/ai-crawler-ua-catalog-2026.md`, `knowledge/robots-ai-crawlers/ai-training-optout-tokens.md`, `knowledge/robots-ai-crawlers/ai-crawler-compliance-reality.md`
 
 ---
@@ -712,7 +712,7 @@ sell products — otherwise a one-line N/A skip.
   Product schema as a distinct check (D1/D2), never evidence of ACP coverage.
 - **Fix:** **C / flag only** — adopting ACP/AP2 is a business + engineering decision needing a real
   payment/fulfillment backend, never an auto-fix or a markup change. Surface the opportunity, confirm
-  intent, record in `claude/seo/decisions.md`. Everything here is emerging and probabilistic — never
+  intent, record in `.agent/seo/decisions.md`. Everything here is emerging and probabilistic — never
   promise agent-driven sales.
 - **Verify:** N/A (advisory); if adopted, the feed ingests and the checkout endpoints round-trip a
   session — adoption **outcomes** stay out of the verdict.
