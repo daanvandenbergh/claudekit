@@ -1,0 +1,150 @@
+---
+title: "/memory-store"
+description: "Reference for the /memory-store skill - file agent memory into a directory as de-duplicated Markdown with --store, and keep it organized with --optimize."
+tab: "Reference"
+group: "Skills"
+order: 5
+icon: "book"
+keywords:
+    - memory-store
+    - agent memory
+    - claude code skill
+image: "/assets/docs/memory-store/hero.en.jpg"
+updated: "2026-08-11"
+---
+
+`/memory-store` writes an agent's durable memory into a directory you choose, as plain Markdown one
+concept per file. Memory here means anything worth carrying across sessions: a learned fact, a
+working convention, a decision and its rationale, a standing project constraint, a procedure, or a
+consequential event. The store is filesystem plus `grep` - there is no vector database, no
+embeddings, and no build step, so the retrieval engine is a future agent running `grep` and then
+reading the hits. It is **not** Claude Code's built-in memory: this is a portable directory you pass
+in by path and invoke explicitly.
+
+## Install
+
+```sh
+mkdir -p .claude/skills
+
+ln -s ../../node_modules/@daanvandenbergh/claudekit/skills/memory/memory-store \
+      .claude/skills/memory-store
+```
+
+Then restart Claude Code so it picks up the new skill.
+
+## Usage
+
+```
+/memory-store --store <memory-dir> <text|file> [--keep-raw] | [--optimize] <memory-dir>
+```
+
+Two modes, and `--store` is the only thing that selects between them. Its absence means optimize, so
+a bare `/memory-store ./memory` runs an optimize pass.
+
+| Token | What it does | Default |
+| --- | --- | --- |
+| `--store` | Files new memory into the store: distils the input to atomic entries, classifies each by kind, greps for existing coverage before writing, then refines, merges, or supersedes in place. | Absent, which selects optimize |
+| `--optimize` | Reviews the whole store: rebuilds the index, merges duplicates, prunes superseded and low-signal entries, flags stale ones. Accepted but optional. | Implied whenever `--store` is absent |
+| `<memory-dir>` | The first non-flag token: the path to the store, resolved to an absolute path. In optimize mode it may name a subdirectory to scope the pass to that subtree. | Required in both modes |
+| `<text or file>` | `--store` only. Everything after the directory except a recognized flag. A path to an existing file is read; anything else is treated as literal text. | Required with `--store` |
+| `--keep-raw` | `--store` only. Forces the verbatim input into `_sources/` even when the origin looks reconstructable. Use it when the exact bytes are the memory. | Off. The raw input is stashed only when its origin cannot be reconstructed, or is load-bearing |
+
+If the directory does not exist, the skill creates it. If it has no `INDEX.md`, the skill treats it
+as a fresh store and writes one first; `--optimize` on an empty store just builds the index and
+stops.
+
+## What a stored entry looks like
+
+The store is a shallow tree, at most two levels deep, plus one mandatory index:
+
+```
+<store-root>/
+  INDEX.md                        # the map, read first on every run
+  <domain>/<concept-slug>.md      # canonical atomic entries
+  _sources/YYYY-MM-DD-<slug>.md   # optional verbatim raw input
+```
+
+Filenames are a kebab-case slug of the concept, most distinctive noun first, and they are the
+primary key: dates, origins, and IDs live in front-matter, never in the name. Every entry carries
+`updated`, `source`, and a one-word `type` (`fact`, `preference`, `decision`, `project`,
+`procedure`, or `event`), then a first line that states the memory itself:
+
+```markdown
+---
+updated: 2026-07-09
+source: conversation with user, 2026-07-09
+type: decision
+tags: [database]
+---
+
+# Chose Postgres over Mongo for the primary store
+
+**Why:** Relational integrity and transactions matter for billing; the team already runs Postgres.
+**How to apply:** New persistence goes in Postgres; propose Mongo only for a genuine document/log
+use case, with rationale.
+```
+
+The `type` sets the body shape. A `fact` gets a `## Facts` list with sources; a `preference`,
+`decision`, or `project` gets **Why** and **How to apply**; a `procedure` gets numbered steps; an
+`event` gets what happened and the lesson.
+
+Each entry gets a row in `INDEX.md` in the same edit that writes it, described specifically enough
+to route a future search:
+
+```markdown
+## decisions
+- [chose-postgres-over-mongo](decisions/chose-postgres-over-mongo.md) - primary store is Postgres;
+  Mongo only for genuine document use · decision · updated: 2026-07-09
+```
+
+## When to use it
+
+Reach for `--store` when something durable comes out of a session and the codebase will not preserve
+it: a user preference, a decision you do not want re-litigated, a lesson from an incident. Anything
+a future agent can recover for free from the code, git history, or project docs is deliberately
+dropped, so store only what was non-obvious about it.
+
+Reach for `--optimize` when the store starts feeling noisy: duplicate entries, a stale index, dead
+links, or facts that have since been overturned. It is conservative and idempotent by design -
+running it on a clean store is close to a no-op, because repeated re-summarizing degrades a memory
+store rather than improving it.
+
+The `workflow.md` rule wires the first mode into a self-improvement loop. It tells the agent that
+after any correction from you, it should capture the pattern:
+
+```
+/memory-store --store .agentstore/memory/ <data to store>
+```
+
+Import that rule and the loop runs without you asking for it. See [Rules](/rules) for the full text.
+
+Keep the store under version control. Git is the undo: with it every merge and prune is reversible
+and the run's report is a real diff. Without it the skill warns once that edits are irreversible and
+becomes more conservative, preferring to supersede rather than delete.
+
+## Examples
+
+File a correction into the project's memory directory:
+
+```
+/memory-store --store .agentstore/memory/ The user prefers 4-space indentation in TypeScript, not 2.
+```
+
+File a whole file, keeping the original bytes alongside the distilled entries:
+
+```
+/memory-store --store ./memory ./notes/incident-2026-07-09.md --keep-raw
+```
+
+Clean up the store, or just one subtree of it:
+
+```
+/memory-store --optimize ./memory
+/memory-store ./memory/auth
+```
+
+## Related
+
+- [Skills and rules](/skills-and-rules) - how a symlinked skill and an imported rule differ.
+- [Rules](/rules) - `workflow.md` and the rest of the rule files.
+- [Getting started](/getting-started) - install the package and link your first skill.

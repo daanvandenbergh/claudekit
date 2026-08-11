@@ -1,0 +1,121 @@
+---
+title: "Skills and rules"
+description: "The two things claudekit ships - a skill you symlink into .claude/skills and a rule you @-import into CLAUDE.md - and why both point into node_modules."
+tab: "Guide"
+group: "Start"
+order: 2
+icon: "link"
+keywords:
+    - claude code skills
+    - claude.md rules
+    - symlink
+image: "/assets/docs/skills-and-rules/hero.en.jpg"
+updated: "2026-08-11"
+---
+
+claudekit ships two kinds of content, and they reach Claude Code through two different mechanisms.
+A **skill** is a directory you symlink into `.claude/skills/`, which Claude runs when you type
+`/<name>`. A **rule** is a Markdown fragment your `CLAUDE.md` imports, which is loaded into every
+session whether you ask for it or not.
+
+## What a skill is
+
+A skill is a directory holding a `SKILL.md`: YAML front-matter (`name`, `description`,
+`user-invokable`, an optional `argument-hint`) followed by the instructions, plus whatever
+`reference/` or `assets/` files it needs. Claude Code discovers it at
+`.claude/skills/<name>/SKILL.md` and you invoke it as `/<name>`.
+
+Use a skill for work you start on purpose: audit this module, write these tests, file this memory.
+It costs you nothing until you call it, so a skill can afford to be long and detailed.
+
+## What a rule is
+
+A rule is a plain Markdown fragment with no front-matter, starting at a `##` heading. You reference
+it from your `CLAUDE.md` with an `@` path, and Claude Code inlines the file's text when it loads the
+file.
+
+Use a rule for a standing instruction that should hold in every session: coding standards, how
+deferred work is handled, what the workflow is. Rules are always in context, so keep the set small -
+each one you import spends tokens on every turn.
+
+## Why symlink a skill instead of copying it
+
+The symlink points into `node_modules`, so the skill you run is the file the package installed:
+
+```sh
+ln -s ../../node_modules/@daanvandenbergh/claudekit/skills/ts/audit \
+      .claude/skills/audit
+```
+
+The `../../` is there because the link itself lives two directories deep, at
+`.claude/skills/audit`, and a relative symlink resolves from the directory holding the link. The
+target has to climb back to the project root before descending into `node_modules`. Keeping it
+relative also means the link survives moving or cloning the repo, which an absolute path would not.
+
+Copy the directory instead and you have forked it. `npm update` refreshes `node_modules`, your copy
+stays at the version you copied, and nothing tells you it drifted.
+
+## Why the rule path points into node_modules
+
+```md
+# CLAUDE.md
+
+@node_modules/@daanvandenbergh/claudekit/rules/core_principles.md
+```
+
+Claude Code inlines an `@` path at load time rather than storing a snapshot, so the rule text you
+get is whatever the installed package currently holds. That gives the rule the same auto-update
+behaviour as the symlinked skill.
+
+The path is resolved relative to the `CLAUDE.md` containing it, so keep `CLAUDE.md` at your project
+root, next to `node_modules`.
+
+## Which skills ship
+
+| Skill | What it does | Path in the package |
+| --- | --- | --- |
+| [/audit](/audit) | Phased audit of one module - security, quality, call-chain logic, tests - then fixes and verifies. | `skills/ts/audit` |
+| [/audit-deep-logic](/audit-deep-logic) | Whole-system audit of the bugs that live in the seams between modules. | `skills/ts/audit-deep-logic` |
+| [/audit-security](/audit-security) | Whole-project security engagement: real scanners, a threat model, and an LLM repo review. | `skills/ts/audit-security` |
+| [/audit-tests](/audit-tests) | Finds untested logic and writes edge-case-exhaustive tests in the project's own style. | `skills/ts/audit-tests` |
+| [/memory-store](/memory-store) | Files agent memory into a directory as de-duplicated Markdown, and keeps it organized. | `skills/memory/memory-store` |
+| [/seo](/seo) | Audits a whole site for SEO, AEO, and structured data, and fixes what it finds. | `skills/web/seo` |
+
+## Which rules ship
+
+Every file in [rules/](/rules) is standalone. Import only the ones you want.
+
+| Rule file | What it adds |
+| --- | --- |
+| `core_principles.md` | Simplicity first, root causes over patches, minimal blast radius. |
+| `workflow.md` | Workflow orchestration, starting with plan mode as the default for non-trivial work. |
+| `todo.md` | Deferring work is a last resort, and how a deferred item must be written down. |
+| `active_sessions.md` | A shared record of what each agent in the repo is currently doing. |
+| `ts_coding_standards.md` | Punctuation, indentation, and production-grade TypeScript conventions. |
+| `ts_modular_coding.md` | Organize the codebase as isolated modules behind one public namespace each. |
+| `audit_security_rules.md` | Where the project's own security invariants live, for `/audit-security` to read. |
+
+## Update and verify
+
+```sh
+npm update @daanvandenbergh/claudekit
+```
+
+Both references resolve through `node_modules`, so there is nothing to re-link and nothing to
+re-copy. Confirm the links still point somewhere real:
+
+```sh
+ls -l .claude/skills
+```
+
+```
+audit -> ../../node_modules/@daanvandenbergh/claudekit/skills/ts/audit
+```
+
+Then **restart Claude Code**. It reads `.claude/skills/` and your `CLAUDE.md` at startup, so an open
+session keeps running the content it loaded when it started.
+
+## Related
+
+- [Getting started](/getting-started) - install the package and link your first skill.
+- [Rules](/rules) - the full text and intent of each rule file.

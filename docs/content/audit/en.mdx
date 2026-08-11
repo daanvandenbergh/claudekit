@@ -1,0 +1,128 @@
+---
+title: "/audit"
+description: "Reference for the /audit skill: install command, arguments and flags, the phases it runs, and when to reach for it over the other audit skills."
+tab: "Reference"
+group: "Skills"
+order: 1
+icon: "shield"
+keywords:
+    - audit
+    - claude code skill
+    - code review
+    - security audit
+image: "/assets/docs/audit/hero.en.jpg"
+updated: "2026-08-11"
+---
+
+`/audit` runs a phased audit of one module, then fixes what it finds. It learns the project's own
+conventions before it reads a line for findings, checks the code against those conventions across
+four areas - security, code quality, deep call-chain logic, and test coverage - applies the fixes,
+runs the build and the test suite, and emits a versioned report. Nothing about a stack, framework,
+or directory layout is baked in, so the same skill works in any repo.
+
+## Install
+
+Symlink the skill into `.claude/skills`, from your project root:
+
+```sh
+mkdir -p .claude/skills
+
+ln -s ../../node_modules/@daanvandenbergh/claudekit/skills/ts/audit \
+      .claude/skills/audit
+```
+
+Restart Claude Code afterwards; it scans `.claude/skills/` at startup. The full install walkthrough
+is on [Getting started](/getting-started).
+
+## Usage
+
+```
+/audit <module-path> [--plan] [--out <path>]
+```
+
+| Argument | What it does | Default |
+| --- | --- | --- |
+| `<module-path>` | The module, directory, or area to audit. Tried as a literal path first, then searched under the project's source roots. If nothing matches, or several do, the skill lists the candidates and asks. | Required |
+| `--plan` | Plan Mode. Every pass stops before editing, lists all findings numbered and grouped by severity, and waits for `approve`, `approve <numbers>`, or `skip`. | Off - fixes apply directly |
+| `--out <path>` | Also write the report to `<path>`, committed, appending each new pass without touching prior ones. That file then carries the pass number and prior findings across sessions. | Off - the report is printed inline |
+
+Both flags are audit-wide: they propagate to every pass and to every sub-agent the audit spawns.
+
+## What it runs
+
+- **Phase 0 - project profile.** Reads `CLAUDE.md`, `tsconfig.json`, `package.json`, lint config, and
+    real source files to resolve the project's naming, logging API, error convention, auth mechanism,
+    tenant-scope key, money representation, validation library, test layout, and build/test commands.
+    Where the standards doc and the code disagree, the code wins and the report says so. A slot it
+    cannot determine is asked about, never filled from a default.
+- **Phase 1 - security.** Eight checks with severity floors: authn/authz per object, tenant isolation,
+    input validation at trust boundaries, injection, secret and error-information leakage, idempotency
+    of externally delivered events, cost and quota on paid APIs, and money correctness.
+- **Phase 2 - code quality.** Standards compliance derived from the profile, error handling, logging,
+    persistence patterns and indexes, concurrency and races, performance, and frontend data paths.
+- **Phase 2.5 - deep logic and call chains.** Traces every public entrypoint end to end, checks
+    state-machine transitions, invariants, money/time/unit math, async ordering, error paths, dead
+    branches, and cross-file contract agreement. This is where most Critical and High findings surface.
+- **Phase 3 - testing and verification.** Reviews the module's tests for coverage and isolation, runs
+    the project's build command, then its test command, and inspects the full output.
+- **Phase 4 - fixes.** Applies fixes by severity, checks both variants of any paired path, updates test
+    fixtures, and re-runs build and tests. Anything assessed but not patched is documented with its
+    reasoning.
+- **Phase 5 - report.** Findings per severity, assessed-but-not-patched items, recurring findings, a
+    security assessment, known deviations, and the audited file list. The verdict is the worst unfixed
+    severity: any unfixed Critical or High means do not ship.
+- **Phase 6 - multi-pass.** Every pass after the first runs in a fresh sub-agent, so the reviewer that
+    wrote the fixes is not the one grading them. Convergence needs two consecutive clean passes; a new
+    Critical or High resets the counter.
+
+Severities drive what happens to a finding:
+
+| Severity | Action |
+| --- | --- |
+| Critical | Fixed immediately, before anything else; blocks the report until patched |
+| High | Always fixed in the pass that found it |
+| Medium | Always fixed unless a documented architectural blocker |
+| Low | Fixed unless the risk is disproportionate; the decision is documented |
+| Informational | Documented only |
+
+The skill carries two reference files it reads during a run: `reference/severity.md` (the definitions
+above, with examples and the rule against downgrading money, auth, data-integrity, idempotency, and
+core-flow bugs) and `reference/recurring-patterns.md` (stack-neutral bug archetypes to scan first,
+which grows as passes find real bugs in your project).
+
+## When to use it
+
+Reach for `/audit` to harden **one module** line by line, across every category at once. The other
+skills each take a different axis:
+
+- [/audit-security](/audit-security) - whole-project security only, running real scanners
+    (osv-scanner, gitleaks, semgrep, trivy) alongside its own review. Report-only by default.
+- [/audit-deep-logic](/audit-deep-logic) - whole-system logic in the seams *between* modules, not
+    inside one.
+- [/audit-tests](/audit-tests) - measures coverage and writes the missing tests, rather than reviewing
+    code.
+
+## Examples
+
+Audit a module and let it fix what it finds:
+
+```
+/audit src/api/users
+```
+
+Review the findings before anything is edited:
+
+```
+/audit src/billing --plan
+```
+
+Persist the report so later passes continue the numbering and check for regressions:
+
+```
+/audit src/billing --out docs/audits/billing.md
+```
+
+## Related
+
+- [Skills and rules](/skills-and-rules) - how skills and rules are referenced, and what ships in each tree.
+- [Getting started](/getting-started) - install the package and link your first skill.

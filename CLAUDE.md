@@ -9,8 +9,13 @@ own `CLAUDE.md`; see `README.md`.
 ## Layout
 - `skills/ts/` - code-quality skills (`audit`, `audit-deep-logic`, `audit-security`, `audit-tests`).
 - `skills/memory/` - agent-memory skills (`memory-store`).
+- `skills/web/` - web skills (`seo`).
 - `rules/` - standalone CLAUDE.md snippets (`core_principles.md`, `workflow.md`, `todo.md`,
   `active_sessions.md`, `ts_coding_standards.md`, `ts_modular_coding.md`, `audit_security_rules.md`).
+- `docs/` - the documentation site (Next.js + `@daanvandenbergh/scribekit`), published to GitHub
+  Pages by `.github/workflows/deploy.yml` as a static export. Pages are MDX under
+  `docs/content/<slug>/en.mdx`; the `Docs` wiring is `docs/app/(docs)/_docs.ts`. Not published to
+  npm (it is not in `files`).
 
 ## Conventions
 - **Everything here must be project-agnostic.** Every skill and every rule is published for
@@ -25,6 +30,8 @@ own `CLAUDE.md`; see `README.md`.
   (that name is what the consumer symlinks and types as `/<name>`).
 - Rule files are plain Markdown fragments meant to be concatenated into a host CLAUDE.md;
   start each at heading level `##` and keep it standalone.
+
+@node_modules/@daanvandenbergh/scribekit/rules/docs_parity.md
 
 ## Releasing
 - Bump `version` in `package.json` and `npm publish` (public scope). No pre-publish build.

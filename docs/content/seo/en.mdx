@@ -1,0 +1,140 @@
+---
+title: "/seo"
+description: "Reference for the /seo skill: install it, audit a whole site for search and answer-engine visibility, and look up every flag, fix tier, and check."
+tab: "Reference"
+group: "Skills"
+order: 6
+icon: "globe"
+keywords:
+    - seo skill
+    - seo audit
+    - answer engine optimization
+    - claude code skills
+image: "/assets/docs/seo/hero.en.jpg"
+updated: "2026-08-11"
+---
+
+`/seo` audits an entire website for search and answer-engine visibility, then fixes what it finds.
+It profiles the stack first - where the project actually emits titles, canonicals, robots directives,
+and JSON-LD - and judges the *rendered* output rather than the source template. It **auto-fixes by
+default**: mechanical repairs are applied on their own, generated text (a missing meta description,
+missing alt) is proposed and then written grounded only in what the page already shows, and anything
+that can de-index the site is never silent. Canonical retargeting, `robots.txt`, `meta robots`,
+redirects, `hreflang`, sitemap regeneration, host or scheme changes, and fact-bearing schema are
+collected into one before/after batch you confirm at the end of the run.
+
+## Install the skill
+
+Symlink it into `.claude/skills/seo`, from your project root:
+
+```sh
+mkdir -p .claude/skills
+
+ln -s ../../node_modules/@daanvandenbergh/claudekit/skills/web/seo \
+      .claude/skills/seo
+```
+
+Restart Claude Code so it picks up the new skill. See [Getting started](/getting-started) for the
+install and symlink mechanics.
+
+## Run it
+
+```
+/seo [--scan] [--plan] [--force] [--out <path>] [--research-keywords] [scope]
+```
+
+A bare `/seo` audits the whole site and applies fixes. There is no `audit` keyword to type: audit is
+the default mode and runs unless a mode flag is present.
+
+| Argument | What it does | Default |
+| --- | --- | --- |
+| `scope` (positional) | A path, route, glob, or URL to narrow the audit to. | The entire site |
+| `--scan` | Report only, zero writes anywhere. Use it to preview a run. | Off (auto-fix is on) |
+| `--plan` | List every finding and apply nothing until you reply `approve` or `approve <ids>`. | Off |
+| `--force` | Apply every fix unattended, including the de-index class, with no confirmation. Warned about once before it is used. | Off |
+| `--out <path>` | Persist the report to `<path>`. A committed report drives pass-numbering across sessions. | Off - the report is emitted inline in the response |
+| `--research-keywords` | Switch to keyword research: harvest candidate keywords from the repo, score them 1-10 via Google Trends and the SERP, and merge a ranked list into `.agentstore/seo/keywords.md`. Idempotent, and `--scan` prints the list instead of writing it. | Off |
+
+Two further flags, `--research-dev-only` and `--improve-research-dev-only`, are **internal**. They
+rewrite the skill's own bundled research corpus and checklist, only run inside the claudekit source
+repo, and stop immediately if they detect they are running from a `node_modules` install. Ignore them
+in a consumer project.
+
+## How fixes are applied
+
+Severity says how bad a problem is; the tier says how dangerous the *fix* is. The two are
+independent - a Critical de-index leak is gated, a Low missing `viewport` is automatic.
+
+| Tier | Covers | Default behaviour |
+| --- | --- | --- |
+| A - safe | Mechanical or read straight off the page: missing `viewport`/`charset`/`lang`, a self-referencing canonical, image `width`/`height`, `loading="lazy"` below the fold, OG and Twitter tags propagated from an existing title and description. | Applied automatically |
+| B - generated | A value has to be written: a missing meta description, alt on a contentful image, a suggested title. Grounded in the page's own visible content; ungroundable values become a `[[NEEDS: ...]]` placeholder rather than an invention. | Proposed, applied on confirm, listed under "generated - verify" |
+| C - de-index | Anything touching indexation or asserting facts: `robots.txt`, `meta robots`/`X-Robots-Tag`, retargeting an existing canonical, redirects, `hreflang` clusters, sitemap regeneration, host/scheme changes, price/rating/review schema. | Never silent - aggregated into one confirm batch, applied only where you approve |
+
+Human-authored copy is never overwritten: auto-fix fills a gap or repairs broken markup, it does not
+rewrite a title you wrote. Deliberate choices - an intentional `noindex`, a blocked AI crawler, a
+settled www-vs-non-www decision - are flagged for intent, never changed, and your answers are recorded
+in `.agentstore/seo/decisions.md` so the next run does not re-ask.
+
+Off-repo ranking factors are **advisory only**: backlinks and digital PR, Google Business Profile and
+listings, server-layer performance (TTFB, CDN, compression), and third-party reputation are reported
+with a recommended next step but never edited, because there is no repo artifact to write.
+
+## What it checks
+
+The audit walks a shipped checklist top to bottom, impact-ordered. A category with nothing to check
+(no i18n, no storefront) is a documented skip, not a silent omission.
+
+| Area | Checks |
+| --- | --- |
+| Indexation integrity | Canonical integrity, `robots.txt` directives, `noindex` leakage, redirects and status codes, `hreflang` reciprocity, duplicate host/scheme, XML sitemap validity |
+| Crawlability | Orphan pages and crawl depth, soft-404s, crawl traps and index bloat, AI-crawler access |
+| Rendering and mobile | Content present in the initial HTML (render parity), mobile-first parity, viewport and charset, tap targets |
+| On-page and semantic HTML | Title, meta description, headings and H1, semantic landmarks, `<html lang>`, internal linking and anchor text, URL structure |
+| Media | Image alt text, explicit dimensions for CLS, next-gen formats and sizing, lazy-loading, `srcset`, media discoverability |
+| Structured data | Schema coverage by template, JSON-LD validity, content-match spam guard, entity graph and `sameAs`, deprecation awareness |
+| Social cards | Open Graph, Twitter/X card |
+| Internationalization | Locale coverage and `x-default` (skipped on a single-locale site) |
+| Local business | Local signals (skipped when the site has no physical location) |
+| Core Web Vitals | LCP, INP, CLS, delivery hygiene, intrusive interstitials |
+| Content and E-E-A-T | Trust signals, experience and expertise, helpful people-first content, freshness |
+| Answer engines (AEO/GEO) | Server-rendered answers, answer-first standalone passages, citeable patterns, entity and author signals, per-engine citation readiness, AI-referral measurement |
+| Agentic commerce | Agentic checkout and payment-mandate readiness (skipped when the site sells nothing) |
+
+How much can be checked depends on what the audit can reach. Files and `grep` always work and carry
+every auto-fix; a dev server or headless browser adds render-level checks; a public URL adds field
+Core Web Vitals and a live link crawl. A check it cannot reach is reported as deferred with the
+reason, never as a pass.
+
+## When to use it
+
+Run it before a launch, after a redesign or a framework migration, or whenever pages are not being
+indexed or not showing up in AI answers. It is stack-agnostic: it detects the generator and the head
+mechanism at runtime, so it works on static HTML, Astro, Hugo, Eleventy, Next.js, Nuxt, SvelteKit,
+Gatsby, Jekyll, WordPress, or Rails without configuration.
+
+## Examples
+
+Preview a full-site audit without touching anything:
+
+```
+/seo --scan
+```
+
+Audit and fix the blog only, and keep the report in the repo:
+
+```
+/seo --out docs/seo-audit.md blog/
+```
+
+Build a scored keyword list for the site:
+
+```
+/seo --research-keywords
+```
+
+## Related
+
+- [Getting started](/getting-started) - install claudekit and link your first skill.
+- [Skills and rules](/skills-and-rules) - how skills and rule snippets are referenced.
+- [/memory-store](/memory-store) - the memory skill `/seo`'s internal research modes build on.

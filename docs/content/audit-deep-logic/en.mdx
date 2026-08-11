@@ -1,0 +1,121 @@
+---
+title: "/audit-deep-logic"
+description: "Reference for the /audit-deep-logic skill: the install command, its arguments and flags, the seam classes it checks, and when to run it instead of /audit."
+tab: "Reference"
+group: "Skills"
+order: 2
+icon: "workflow"
+keywords:
+    - audit-deep-logic
+    - cross-module audit
+    - architecture review
+image: "/assets/docs/audit-deep-logic/hero.en.jpg"
+updated: "2026-08-11"
+---
+
+`/audit-deep-logic` audits the bugs that live in the seams **between** modules rather than inside any
+one of them: a writer and a reader that disagree on units, a rule enforced on one entrypoint and
+skipped on its sibling, a store nobody wired into the deletion cascade, a lifecycle spread across four
+modules that can reach a state none of them believes is possible. It is stack-agnostic - it learns the
+project's real boundaries first - and every finding is a two-site trace with a concrete trigger, never
+an architecture essay.
+
+## Install
+
+Symlink the skill into `.claude/skills/`, from your project root:
+
+```sh
+mkdir -p .claude/skills
+
+ln -s ../../node_modules/@daanvandenbergh/claudekit/skills/ts/audit-deep-logic \
+      .claude/skills/audit-deep-logic
+```
+
+Then restart Claude Code - it scans `.claude/skills/` at startup.
+
+## Usage
+
+```
+/audit-deep-logic [subsystem or boundary] [--fix] [--out <path>]
+```
+
+Every argument is optional. With none, it audits the whole system and prints the report in the
+response without touching code.
+
+| Argument | What it does | Default |
+| --- | --- | --- |
+| `[subsystem or boundary]` | Narrows *which seams enter the inventory* - the contracts, entrypoints, and invariants **around** that module. It does not mean "read that module's files". | the whole system |
+| `--fix` | Applies findings one at a time, Critical-first, re-running the project's build and tests after each. | off (report only) |
+| `--out <path>` | Also writes the report to that path, appending each pass instead of overwriting, for cross-session convergence. | off (report is inline only) |
+
+Report-only is the default because a seam fix touches two or more modules and needs human
+architectural buy-in.
+
+## What it checks
+
+Before it raises anything, the skill builds a system profile (modules, entrypoints, stores and their
+owners, destructive and spend operations, shared resources) and a finite, countable seam inventory.
+It then works that inventory - not the file tree - through seven lens families:
+
+- **DL1 Cross-cutting completeness** - a responsibility that must cover a whole set misses a member:
+  a store the deletion cascade never deletes, or a sibling entrypoint that destroys, spends, or
+  exposes data while skipping the cascade, gate, or idempotency ledger.
+- **DL2 Architecture-boundary drift** - the built code breaks a *declared* boundary with a
+  demonstrable consequence: a layer importing what it must not, a store written outside its owning
+  accessor, a chokepoint invariant voided.
+- **DL3 Seam contracts** - one module writes a value another reads assuming a different shape, unit,
+  optionality, enum domain, encoding, or error semantics. Money scale, time units, and identifier
+  encoding are the recurring ones.
+- **DL4 Trust-boundary asymmetry** - the same sink or operation is reached from entrypoints that
+  establish identity, authorization, or entitlement with different strength; the weakest path defines
+  the real posture.
+- **DL5 Distributed state and ordering** - a lifecycle no single module owns: a terminal state another
+  module can re-enter, an external mirror with no reconcile path, a multi-store unit of work with no
+  shared transaction, a replayed event that runs a side effect twice.
+- **DL6 Duplicate source of truth** - the same fact or rule computed in two places that can diverge,
+  or a spend path that gates on neither copy.
+- **DL7 Shared-resource coupling** - one module owns a resource's property and another silently
+  depends on it never changing: a rotatable secret reused as an encryption key, a clock's timezone, a
+  mutable flag an invariant rides on.
+
+Every candidate must then clear a fixed admissibility gate: two `file:line` sites on opposite sides of
+one named seam, both bodies read in this session, no existing bridge already reconciling them, a
+concrete trigger with a wrong outcome, and a stated reason a single-module audit could not have seen
+it. A candidate with no reproducible trace gets no severity and lands in a non-blocking
+**Design observations** section. The verdict is the worst unfixed severity; any unfixed Critical or
+High means do not ship.
+
+## When to use it
+
+Reach for [/audit](/audit) to harden **one** file or module line by line, and for this when the
+question is whether the modules compose. The scope rule is sharp: **if a bug is provable by reading
+one file top to bottom, it is out of scope here** and belongs to a single-module pass. It is also not
+a security, i18n, over-engineering, or test-coverage pass - those are [/audit-security](/audit-security)
+and [/audit-tests](/audit-tests). When a sibling single-module audit skill is installed,
+`/audit-deep-logic` defers to that skill's severity file so both reports interoperate.
+
+## Examples
+
+Whole-system pass, report printed inline, nothing written to disk:
+
+```
+/audit-deep-logic
+```
+
+Audit only the seams around the billing module - the contracts it exports and imports, the entrypoints
+that reach its data, the invariants it participates in:
+
+```
+/audit-deep-logic src/billing
+```
+
+Apply the findings and keep a durable, append-only report across sessions:
+
+```
+/audit-deep-logic --fix --out .agentstore/audit-deep-logic/architecture.md
+```
+
+## Related
+
+- [/audit](/audit) - the single-module counterpart.
+- [Skills and rules](/skills-and-rules) - how the symlink and `@`-import mechanisms work.

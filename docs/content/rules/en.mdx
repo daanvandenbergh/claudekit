@@ -1,0 +1,117 @@
+---
+title: "CLAUDE.md rules"
+description: "Reference for all seven rule snippets in claudekit: what each one asks the agent to do, who it is for, and how to @-import them."
+tab: "Reference"
+group: "Rules"
+order: 1
+icon: "list"
+keywords:
+    - claude.md rules
+    - claudekit rules
+    - agent rules
+image: "/assets/docs/rules/hero.en.jpg"
+updated: "2026-08-11"
+---
+
+A rule is a standalone Markdown fragment that starts at heading level `##` and carries one set of
+standing instructions for the agent. You `@`-import it into your project's `CLAUDE.md`, so Claude Code
+inlines the text every time it loads the file and the wording stays current with the package instead of
+being copied once and left to drift. See [Skills and rules](/skills-and-rules) for how that differs from
+a symlinked skill.
+
+## Import them into CLAUDE.md
+
+Add one line per rule you want:
+
+```md
+# CLAUDE.md
+
+@node_modules/@daanvandenbergh/claudekit/rules/core_principles.md
+@node_modules/@daanvandenbergh/claudekit/rules/workflow.md
+@node_modules/@daanvandenbergh/claudekit/rules/todo.md
+@node_modules/@daanvandenbergh/claudekit/rules/active_sessions.md
+@node_modules/@daanvandenbergh/claudekit/rules/ts_coding_standards.md
+@node_modules/@daanvandenbergh/claudekit/rules/ts_modular_coding.md
+@node_modules/@daanvandenbergh/claudekit/rules/audit_security_rules.md
+```
+
+Every file is self-contained, so take only the ones you want and skip the rest. The `@` path is
+resolved relative to the `CLAUDE.md` that holds it, so keep `CLAUDE.md` at your project root, next to
+`node_modules`.
+
+## `core_principles.md`
+
+Three lines, and the shortest file in the tree: make every change as simple as possible and touch
+minimal code, find root causes rather than shipping temporary fixes, and keep changes to what is
+necessary so you do not introduce new bugs. For every project - this is the baseline the other rules
+assume.
+
+## `workflow.md`
+
+Sets the operating loop. It asks the agent to enter plan mode for anything non-trivial (3+ steps or an
+architectural decision) and to stop and re-plan when something goes sideways, to offload research and
+parallel analysis to subagents so the main context stays clean, to record the pattern in
+`.agentstore/memory/` after any correction from the user, to never mark a task complete without proving
+it works, and to just fix a bug report rather than asking for hand-holding. A second half covers task
+management: write the plan to `.agentstore/tasks/plans.md` as checkable items, confirm it before
+implementing, and add a review section when done. For anyone who wants a consistent session shape
+instead of per-prompt improvisation.
+
+## `todo.md`
+
+The deferral bar, and it is deliberately high: fix it now, because `TODO.md` is where work goes when it
+*cannot* be done, not when it would be inconvenient. Only two reasons qualify - blocked on a real-world
+action no agent can perform from this machine (a registration, a DNS record, a credential only the user
+holds), or genuinely a separate project needing its own research phase and session. The rest of the file
+names the excuses that do not count ("it is out of scope", "it touches other files", "it needs a design
+decision"), requires every item that does get written to read as a copy-paste-ready prompt with exact
+paths and a verifying command, and treats a growing list as a failure signal. For projects where the
+agent quietly files work instead of finishing it.
+
+## `active_sessions.md`
+
+For repos where several agents work at once. Each session generates an id once with
+`openssl rand -hex 4`, adds a line to `.agentstore/active_sessions.md` with today's date (from
+`date -u +%F`, never guessed) and a task description concrete enough for another agent to spot an
+overlap, then removes that line when the work is handed back. Any read or write of the file also deletes
+every entry older than 7 days, and the agent reads the file before large or cross-cutting edits. For
+multi-agent repos; skip it if only one session ever runs.
+
+## `ts_coding_standards.md`
+
+The formatting and typing floor. Use `-` rather than `—`, 4 spaces per indent level unless `CLAUDE.md`
+says otherwise, production-grade TypeScript, and a docstring on every function, class, method,
+interface, and interface property. It also bans directives that suppress real errors: no `@ts-ignore` or
+`@ts-nocheck`, and `@ts-expect-error` too, with one exception - type-safety test files
+(`*.test-d.ts` / `*.test-d.tsx`), where the directive asserts that the compiler correctly rejects an
+invalid construct. For TypeScript projects.
+
+## `ts_modular_coding.md`
+
+How to lay out a TypeScript codebase: (semi-)isolated modules, one domain each, exposed through a single
+namespace surface such as `Auth`, `Payments`, or `Storage`. All of a module's files stay together - its
+logic, types, and tests - with public files at the module root and anything not part of the public API in
+an `internal/` subdirectory. Modules may depend on each other freely; the rule the file really enforces
+is placement, so when you are working in module A and reach for something that belongs to module B, you
+extend B's public surface and call it from A, even when B does not have it yet and only A needs it today.
+For TypeScript projects.
+
+## `audit_security_rules.md`
+
+A standing obligation to maintain `.agentstore/audit-security/rules.md`, the project's own
+silent-failure security invariants - the ones a generic scanner will never find because they are yours
+(tenant scope, a deletion cascade, an operator smuggled from a JSON body into a query filter). It defines
+what earns a place there (a rule that fails silently *and* is violable by code that does not exist yet)
+and the format each entry takes: a one-line failure mode, a `✗`/`✓` pair drawn from a real bug, and a
+`hunt` ripgrep block with an `expect:` count floor and a named `witness:` file. It also requires any
+mechanical copy of an invariant (a sweep script, a lint rule, a test) to be updated in the same change,
+treats a rule whose hunt matches nothing as stale rather than passing, and forbids deleting a rule to
+make an audit pass. For any project running security audits.
+
+## Related
+
+- [/audit-security](/audit-security) - `audit_security_rules.md` is its standing companion: the skill
+  hunts the invariants each run, the rule keeps the registry honest as the code moves.
+- [/memory-store](/memory-store) - the skill `workflow.md` points at for storing a lesson after a
+  correction.
+- [Skills and rules](/skills-and-rules) - how `@`-imports and symlinks differ, and what ships in each tree.

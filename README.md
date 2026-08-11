@@ -7,6 +7,8 @@
 > [Claude Code](https://claude.com/claude-code) **skills** and **CLAUDE.md rules** that
 > Claude Code agents load - you drop them into any project.
 
+**Documentation: <https://daanvandenbergh.github.io/claudekit>**
+
 Reusable [Claude Code](https://claude.com/claude-code) **skills** and **CLAUDE.md rule
 snippets**, shipped as plain content. You install the package as a dev-dependency, then
 symlink the skills you want into your project's `.claude/skills/` and `@`-import the rules

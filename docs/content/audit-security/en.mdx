@@ -1,0 +1,137 @@
+---
+title: "/audit-security"
+description: "Reference for the /audit-security skill: a whole-project security audit that runs osv-scanner, gitleaks, semgrep and trivy, then adds its own threat-modelled LLM review and adversarial triage."
+tab: "Reference"
+group: "Skills"
+order: 3
+icon: "shield"
+keywords:
+    - audit-security
+    - security audit
+    - claude code skill
+    - gitleaks
+    - semgrep
+image: "/assets/docs/audit-security/hero.en.jpg"
+updated: "2026-08-11"
+---
+
+`/audit-security` audits a whole project for security, not one module. It runs the real scanners
+(osv-scanner for dependency CVEs, gitleaks for secrets in the working tree and in full git history,
+semgrep for SAST, trivy for infrastructure-as-code), builds a threat model so findings are ranked by
+what is actually worth attacking, hunts the project's own silent-failure invariants, then performs its
+own LLM-driven review of the entire repository and adversarially triages every candidate. It profiles
+the project before it checks anything, so it is stack-agnostic, and it is report-only unless you pass
+`--fix`.
+
+## Install
+
+From your project root:
+
+```sh
+mkdir -p .claude/skills
+
+ln -s ../../node_modules/@daanvandenbergh/claudekit/skills/ts/audit-security \
+      .claude/skills/audit-security
+```
+
+Restart Claude Code so it picks up the new skill.
+
+**External tools.** The skill shells out to real scanners and requires **osv-scanner**, **gitleaks**
+and **semgrep** on your `PATH`. **trivy** is required only when the repo contains IaC markers (`*.tf`,
+Kubernetes YAML, a `Dockerfile`). Phase 00 checks each tool's presence, version and a canary probe, and
+**hard-halts** if a required one is missing or is running zero rules - it prints the install command
+rather than reporting a partial scan as clean.
+
+## Run it
+
+```
+/audit-security [scope] [--fix] [--quick] [--no-history] [--out <path>] [--verify-secrets]
+```
+
+| Argument | What it does | Default |
+| --- | --- | --- |
+| `scope` | A path, area or subsystem that narrows the Phase 40 deep review. The scanners, the secret scan and the invariant hunt still cover the whole repo. | Whole project |
+| `--fix` | Opt into the tiered remediation phase. Everything before it is read-only. | Off (report-only) |
+| `--quick` | Runs phases 00, 10, 20, 30, 50 and 60 only - scanners, invariants, triage, report. Skips the LLM sweep and the ASVS net, and the report is stamped so it never reads as a full run. | Off |
+| `--deep` | Adds the noisier semgrep packs (`p/security-audit`, `p/default`) to the SAST sweep. | Off |
+| `--since <ref>` | Deep-audits only code changed since `<ref>` plus its reverse-dependency closure. Every unfixed High+ finding from the prior ledger is carried forward. | Off; `<ref>` defaults to the last run's commit |
+| `--resume` | Resumes an interrupted run from `.agentstore/audit-security/state/`. | Off |
+| `--budget <tier\|tokens>` | Caps spend and stamps the depth tier reached (T0/T1/T2) on the verdict. Below the always-runs floor the run halts as `INCOMPLETE`. | Off (no cap) |
+| `--no-history` | Skips the gitleaks full-history secret pass. The working-tree scan still runs. | Off (history is scanned) |
+| `--verify-secrets` | Adds TruffleHog live-verification of a candidate secret. This authenticates to the vendor with the credential, so it is an explicit opt-in. | Off |
+| `--out <path>` | Persists the report to `<path>`, creating parent directories. | Off (report is inline) |
+| `--self-test` | Maintainer-only: runs the calibration harness against `fixtures/` and emits a precision/recall scorecard instead of auditing. | Off |
+
+## What it runs
+
+The skill reads the code **on disk** - your working tree, uncommitted edits included - so you can fix
+something and re-run before committing. The one exception is the secret scan, which also covers full
+git history, because a committed-then-deleted credential is still live in every clone.
+
+The phases, in order:
+
+- **00 profile + tooling gate** - learns the stack, entrypoints, auth mechanism, tenant key and money
+  representation, then proves every required scanner actually runs.
+- **05 scope**, **10 threat model** - risk appetite, exclusions, and the register of attack surfaces.
+- **20 scanners** - osv-scanner (`scan source -r`), gitleaks in both `dir` and `git` mode, semgrep with
+  `p/ci` + `p/owasp-top-ten` + `p/secrets` + the detected language pack, and trivy when IaC is present.
+  Each dependency CVE gets a reachability verdict, which downgrades but never auto-suppresses.
+- **30 invariants** - hunts the project's own rules from `.agentstore/audit-security/rules.md`. If that
+  file is missing, this phase offers to bootstrap it from past audit reports, git history and the test
+  suite.
+- **40 LLM whole-repo review** - a local sweep of all the code, directed by the threat model. Skipped by
+  `--quick`.
+- **50 triage** - a three-role panel adjudicates each candidate. The ledger is append-only: a rejected
+  candidate stays visible in a `Refuted` section, and "I could not build a trace" is reported at full
+  severity rather than dismissed.
+- **55 compliance** (only when a regime is set), **60 report**.
+- **70 fix** - runs only with `--fix`.
+
+**It is report-only by default.** With `--fix`, remediation is tiered by how dangerous the fix is, not
+how bad the hole is: safe changes (a dependency bump to its minimum fixed version, pinning an action to
+a SHA) apply automatically and are re-proved against the build and test suite; behavioural fail-closed
+changes are shown as a diff and applied only on approval; auth, crypto, tenant-scoping, payment paths
+and anything touching a leaked credential are human-only and produce a runbook, never a patch. A leaked
+secret is never closed by deleting the line - it stays `rotation-pending` until you rotate it at the
+provider.
+
+A report with no blocking findings is not a certificate that the project is secure, and the skill says
+so in every report.
+
+## Its companion rule
+
+`rules/audit_security_rules.md` is the CLAUDE.md snippet that pairs with this skill. It makes
+maintaining `.agentstore/audit-security/rules.md` - your project's own silent-failure invariants, the
+ones no generic scanner will ever find - a standing obligation rather than a one-time act, and it
+specifies the format Phase 30 expects: a failure mode, a `✗`/`✓` pair drawn from a real bug, and a
+`hunt` block with a count floor.
+
+Import it like any other rule; see [Rules](/rules). Run state lives in
+`.agentstore/audit-security/state/` (gitignore it) and accepted risks in
+`.agentstore/audit-security/accepted.md`.
+
+## When to use it
+
+Use `/audit-security` when you want the whole project checked for security: before a release, after an
+auth, money, tenant or AI change, or when you need a dependency and secret sweep. Use [/audit](/audit)
+instead when you are hardening one module, [/audit-deep-logic](/audit-deep-logic) for cross-module
+logic bugs that are not security, and [/audit-tests](/audit-tests) for test coverage.
+
+## Examples
+
+```
+/audit-security
+```
+
+```
+/audit-security src/billing --out .agentstore/audit-security/report.md
+```
+
+```
+/audit-security --quick --no-history
+```
+
+## Related
+
+- [Skills and rules](/skills-and-rules) - how the symlink and `@`-import mechanisms work.
+- [Getting started](/getting-started) - installing the package and linking your first skill.

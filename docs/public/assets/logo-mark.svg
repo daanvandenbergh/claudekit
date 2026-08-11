@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" role="img" aria-label="claudekit">
+    <title>claudekit</title>
+    <defs>
+        <!--
+         * The bare agent mark on the brand ramp, no tile behind it - for light surfaces that supply
+         * their own background (the docs navbar). `userSpaceOnUse` so the ramp runs once across the
+         * whole mark instead of restarting inside every sub-shape.
+         -->
+        <linearGradient id="ck-mark" gradientUnits="userSpaceOnUse" x1="2" y1="4" x2="22" y2="20">
+            <stop offset="0" stop-color="#2563EB" />
+            <stop offset="55%" stop-color="#6D5DF6" />
+            <stop offset="100%" stop-color="#8A54D8" />
+        </linearGradient>
+    </defs>
+    <g stroke="url(#ck-mark)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 8V4H8" />
+        <rect x="4" y="8" width="16" height="12" rx="2" />
+        <path d="M2 14h2" />
+        <path d="M20 14h2" />
+        <path d="M15 13v2" />
+        <path d="M9 13v2" />
+    </g>
+</svg>

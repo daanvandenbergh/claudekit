@@ -1,0 +1,104 @@
+---
+title: "Getting started"
+description: "Install claudekit, symlink a skill into .claude/skills, @-import a rule into CLAUDE.md, and run your first audit."
+tab: "Guide"
+group: "Start"
+order: 1
+icon: "rocket"
+keywords:
+    - claudekit
+    - claude code skills
+    - install
+image: "/assets/docs/getting-started/hero.en.jpg"
+updated: "2026-08-11"
+---
+
+claudekit is a content-only npm package of reusable [Claude Code](https://claude.com/claude-code) skills
+and CLAUDE.md rule snippets. It ships no runtime code and makes no API calls: the published package is
+just the `skills/` and `rules/` trees, which your project references in place.
+
+By the end of this page you will have one skill linked, one rule imported, and an audit running.
+
+**Prerequisites:** a project with a `package.json`, npm, and Claude Code installed. The symlink step
+assumes macOS or Linux.
+
+## 1. Install the package
+
+Install it as a dev-dependency, from your project root:
+
+```sh
+npm install --save-dev @daanvandenbergh/claudekit
+```
+
+That is the whole install. There is no build step and no postinstall hook; the content now sits in
+`node_modules/@daanvandenbergh/claudekit/`.
+
+## 2. Link a skill into .claude/skills
+
+Claude Code discovers skills at `.claude/skills/<name>/SKILL.md`. Symlink the skill directory out of
+`node_modules` instead of copying it, so the skill updates with the package. Run this from your project
+root:
+
+```sh
+mkdir -p .claude/skills
+
+ln -s ../../node_modules/@daanvandenbergh/claudekit/skills/ts/audit \
+      .claude/skills/audit
+```
+
+The `../../` is there because the link lives two directories deep, at `.claude/skills/audit`. A relative
+symlink is resolved from the directory holding the link, so it has to climb back to the project root
+before descending into `node_modules`. Keeping it relative means the link survives moving or cloning the
+repo.
+
+Check it:
+
+```sh
+ls -l .claude/skills
+```
+
+```
+audit -> ../../node_modules/@daanvandenbergh/claudekit/skills/ts/audit
+```
+
+Now **restart Claude Code**. It scans `.claude/skills/` at startup, so a session that was already open
+will not see the new skill.
+
+## 3. Import a rule into your CLAUDE.md
+
+Claude Code inlines any `@path` reference in `CLAUDE.md` when it loads. Point one at a rule file inside
+`node_modules` and the rule text stays current with the package:
+
+```md
+# CLAUDE.md
+
+@node_modules/@daanvandenbergh/claudekit/rules/core_principles.md
+```
+
+The path is resolved relative to the `CLAUDE.md` file, so keep `CLAUDE.md` at your project root, next to
+`node_modules`. Each rule file is standalone; add only the ones you want.
+
+## 4. Run the skill
+
+In Claude Code, invoke the skill by its directory name and give it a module path:
+
+```
+/audit src/api/users
+```
+
+`/audit` runs a phased audit of that module - security, code quality, call-chain logic, and test
+coverage - fixes what it finds, verifies the build and tests, and prints a report.
+
+## 5. Update the package
+
+```sh
+npm update @daanvandenbergh/claudekit
+```
+
+Both references point into `node_modules`: the symlinked skill and the `@`-imported rule pick up the new
+content on the next Claude Code session. There is nothing to re-link and nothing to re-copy.
+
+## Related
+
+- [Skills and rules](/skills-and-rules) - how the two reference mechanisms work, and what ships in each tree.
+- [/audit](/audit) - the full reference for the skill you just ran.
