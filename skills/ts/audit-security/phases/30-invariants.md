@@ -1,5 +1,5 @@
 > **Phase 30 - Project invariants**
-> **Consumes:** `PROFILE`, `.agent/audit-security/rules.md` (if present).
+> **Consumes:** `PROFILE`, `.agentstore/audit-security/rules.md` (if present).
 > **Produces:** `RULES-HITS` (candidates per rule) and `HEALTH` (the rule-health table).
 > **Gate:** BLOCKING for Phase 40 (its per-surface RULES checks come from here). Read
 >   `reference/rules-format.md` in full first.
@@ -10,12 +10,12 @@ No generic scanner will ever find a project's own silent bugs - "every query fil
 key", "a new collection goes in the deletion cascade or it orphans PII forever", "a value spliced
 into a pipeline update must be literal-wrapped", "refund only what you can prove was never sent." All
 exploitable, all silent, not one in any ruleset. This phase hunts the project's own invariants from
-`.agent/audit-security/rules.md`. The full format, worked example, and the `accepted.md` spec are in
+`.agentstore/audit-security/rules.md`. The full format, worked example, and the `accepted.md` spec are in
 `reference/rules-format.md`; the phase mechanics:
 
 ## 30.1 No rules file -> bootstrap (do not shrug and run gitleaks)
 
-If `.agent/audit-security/rules.md` is absent, offer to draft it. Evidence, in descending
+If `.agentstore/audit-security/rules.md` is absent, offer to draft it. Evidence, in descending
 credibility: **past audit reports** (a shipped bug is a proven invariant - the highest-quality
 signal in the building), **git history** (the files with the most fix commits, and every revert - a
 function fixed four times has an invariant nobody wrote down), **the existing test suite** (harvest

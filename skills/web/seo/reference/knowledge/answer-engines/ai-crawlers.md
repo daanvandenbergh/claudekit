@@ -48,7 +48,7 @@ no de-index risk (in the `/seo` checklist all robots.txt edits are batched as Ti
   OpenAI ~tripled its crawl volume YoY — reinforces that blocking OpenAI's search/user tier is the
   highest-cost AEO block. Directional, not a threshold. [Vercel/Botify]
 - **Never auto-unblock or auto-block.** Report posture, explain the three tiers + the legal/licensing
-  dimension, confirm intent, and record the decision in `.agent/seo/decisions.md` so it isn't re-flagged.
+  dimension, confirm intent, and record the decision in `.agentstore/seo/decisions.md` so it isn't re-flagged.
 
 ## Related
 - [extractability](extractability.md)

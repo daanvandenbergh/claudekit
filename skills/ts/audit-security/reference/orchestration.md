@@ -11,7 +11,7 @@ ownership function**, and wire three existing honesty mechanisms (residue, appen
 
 ## The persisted state dir
 
-`.agent/audit-security/state/` - gitignored (add it to the consumer's `.gitignore`). Every phase
+`.agentstore/audit-security/state/` - gitignored (add it to the consumer's `.gitignore`). Every phase
 reaches it only through these artifacts, same one-way rule the phases already obey.
 
 | File | Holds | Notes |

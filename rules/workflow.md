@@ -13,7 +13,7 @@
 - One task per subagent for focused execution
 
 ### 3. Self-Improvement Loop
-- After ANY correction from the user: update `.agent/memory/` memory with the pattern, either use skill `/memory-store --store .agent/memory/ <data to store>` to store data, or save it to `.agent/memory/lessons.md`
+- After ANY correction from the user: update `.agentstore/memory/` memory with the pattern, either use skill `/memory-store --store .agentstore/memory/ <data to store>` to store data, or save it to `.agentstore/memory/lessons.md`
 - Write rules for yourself that prevent the same mistake
 - Ruthlessly iterate on these lessons until mistake rate drops
 - Review lessons at session start for relevant project
@@ -38,9 +38,9 @@
 
 ## Task Management
 
-1. **Plan First**: Write plan to `.agent/tasks/plans.md` with checkable items  
+1. **Plan First**: Write plan to `.agentstore/tasks/plans.md` with checkable items  
 2. **Verify Plan**: Check in before starting implementation  
 3. **Track Progress**: Mark items complete as you go  
 4. **Explain Changes**: High-level summary at each step  
-5. **Document Results**: Add review section to `.agent/tasks/plans.md`  
-6. **Capture Lessons**: Update `.agent/memory/` after corrections, either use skill `/memory-store --store .agent/memory/ <data to store>` to store data, or save it to `.agent/memory/lessons.md`
+5. **Document Results**: Add review section to `.agentstore/tasks/plans.md`  
+6. **Capture Lessons**: Update `.agentstore/memory/` after corrections, either use skill `/memory-store --store .agentstore/memory/ <data to store>` to store data, or save it to `.agentstore/memory/lessons.md`

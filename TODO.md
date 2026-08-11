@@ -55,7 +55,7 @@ free to be advisory/action-oriented without contorting the audit's edit-and-veri
   profile presence & consistency, sentiment at a high level.
 - **Competitor gap analysis** — the connective tissue: keyword gap, backlink gap, content gap,
   SERP-feature gap vs. a named competitor set. Feeds all the above with "who's beating us and where."
-- **Rank / visibility tracking** — track target keywords (from `.agent/seo/keywords.md`) over time,
+- **Rank / visibility tracking** — track target keywords (from `.agentstore/seo/keywords.md`) over time,
   SERP features won/lost, share-of-voice. Time-series, so it wants a persisted history file.
 
 ### Data sources (the hard part — decide before building)
@@ -66,7 +66,7 @@ free to be advisory/action-oriented without contorting the audit's edit-and-veri
 - **Paid (backlinks need these — no good free index exists):** Ahrefs / Semrush / Moz / Majestic APIs.
   Design the skill so it **degrades to Search Console + SERP scraping when no paid key is present**
   (mirror `/seo`'s "degrade, don't fail" ethos), and clearly label which metrics are estimates.
-- **Config:** a `.agent/seo/offpage.config.*` (or reuse a shared `.agent/seo/` config) for API keys,
+- **Config:** a `.agentstore/seo/offpage.config.*` (or reuse a shared `.agentstore/seo/` config) for API keys,
   competitor list, target locations, and brand/NAP canonical values.
 
 ### Modes / invocation (sketch)
@@ -77,10 +77,10 @@ free to be advisory/action-oriented without contorting the audit's edit-and-veri
 
 ### Output / artifacts
 
-- `.agent/seo/offpage.md` — a persisted, **idempotent** off-page report + prioritized action plan
+- `.agentstore/seo/offpage.md` — a persisted, **idempotent** off-page report + prioritized action plan
   (same merge-not-rewrite discipline as `keywords.md`, keyed so re-runs update in place).
-- Optional `.agent/seo/rank-history.md` (or CSV) for `--track` time-series.
-- Outreach drafts as separate files under `.agent/seo/outreach/` (human sends them — never auto-sent).
+- Optional `.agentstore/seo/rank-history.md` (or CSV) for `--track` time-series.
+- Outreach drafts as separate files under `.agentstore/seo/outreach/` (human sends them — never auto-sent).
 
 ### Safety / boundaries (carry over `/seo`'s ethos)
 
@@ -95,7 +95,7 @@ free to be advisory/action-oriented without contorting the audit's edit-and-veri
 ### Relationship to `/seo`
 
 - `/seo` audit surfaces off-repo items as advisories → this skill is where they get worked.
-- Shares `.agent/seo/` (keywords.md, decisions.md) — rank tracking consumes `keywords.md`; local SEO
+- Shares `.agentstore/seo/` (keywords.md, decisions.md) — rank tracking consumes `keywords.md`; local SEO
   cross-checks the on-site `LocalBusiness` schema the audit already inspects.
 - Same authoring conventions: project-/stack-agnostic, self-contained skill dir, no cross-skill imports,
   `reference/` for any dated knowledge, `Verified: <date>` on researched thresholds.

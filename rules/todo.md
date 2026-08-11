@@ -23,7 +23,7 @@ Every one of these has been used to file an item that should have been a fix:
 
 - "It touches other files" / "it needs a refactor first" - then touch them, then refactor.
 - "It changes a shared module" or "another session may be editing that file" - check
-  `.agent/active_sessions.md`; if nobody has claimed it, it is yours. A file being important is a
+  `.agentstore/active_sessions.md`; if nobody has claimed it, it is yours. A file being important is a
   reason to be careful, not a reason to walk away.
 - "It is out of scope of the task I was given" - a bug you *found* while doing the task is in scope.
   Fixing it is the job.

@@ -37,7 +37,7 @@ There is no `audit` keyword to type; a bare `/seo`, `/seo --scan`, or `/seo <pat
 | If the args contain… | Mode | What runs |
 |---|---|---|
 | *(no mode flag)* | **audit** (default) | Phases 0-6 below. Auto-fixes safe issues; **de-index-class changes are always confirmed**; `--scan` reports only. |
-| `--research-keywords` | **research-keywords** | Scan the repo for candidate keywords → verify each via `claude-in-chrome` → merge a scored, ranked list into the consumer's `.agent/seo/keywords.md` (idempotent). |
+| `--research-keywords` | **research-keywords** | Scan the repo for candidate keywords → verify each via `claude-in-chrome` → merge a scored, ranked list into the consumer's `.agentstore/seo/keywords.md` (idempotent). |
 | `--research-dev-only` | **research** (DEV ONLY) | ~20 domain agents (one per topic) + 1 topic-coverage scout refresh `reference/knowledge/` via `/memory-store`, then regenerate `reference/checklist.md`. |
 | `--improve-research-dev-only` | **improve** (DEV ONLY) | `/memory-store --optimize reference/knowledge` + checklist link reconciliation. |
 
@@ -47,7 +47,7 @@ consolidates what research just filed). Everything in the args that is not a rec
 **scope hint**.
 
 **`--research-keywords` is consumer-facing** — unlike the two `--…-dev-only` flags it writes only to
-the consumer's own `.agent/seo/keywords.md`, never to the skill, so it is safe to run in any install.
+the consumer's own `.agentstore/seo/keywords.md`, never to the skill, so it is safe to run in any install.
 
 The two `--…-dev-only` flags are deliberately verbose and un-aliased: they mutate the skill's own
 bundled research and must only ever run in the `@daanvandenbergh/claudekit` **source repo**,
@@ -200,7 +200,7 @@ as "pass". If no render surface at all can be obtained, run Tier 0 against sourc
 render-dependent finding **"source-level, unverified against render"**. Never adjudicate an SEO fact
 from template source alone and call it clean.
 
-**0.4 Decisions log.** Read `.agent/seo/decisions.md` in the consumer's project if it exists. It
+**0.4 Decisions log.** Read `.agentstore/seo/decisions.md` in the consumer's project if it exists. It
 records the site's intentional choices (suppressions) and the owner's prior approvals/rejections of
 de-index-class fixes, each dated. Suppress anything it covers - do not re-flag a confirmed intentional
 choice, and **never re-propose a fix the owner already rejected.** New decisions are appended in
@@ -281,11 +281,11 @@ pass-numbering). Structure:
   <check-id · file:line · failure · evidence · severity · tier · affected pages>
 ## Coverage matrix
   <check-id × template-class → pass / fixed / skipped(reason) / deferred(reason)>
-## Decisions recorded this run  → appended to .agent/seo/decisions.md
+## Decisions recorded this run  → appended to .agentstore/seo/decisions.md
 ```
 
 Append new intentional-choice suppressions and any de-index approvals/rejections to
-`.agent/seo/decisions.md` (create it if absent) so the next run respects them.
+`.agentstore/seo/decisions.md` (create it if absent) so the next run respects them.
 
 ### Phase 6 — Multi-pass
 
@@ -301,12 +301,12 @@ after **two consecutive clean passes**; any new Critical or High resets the coun
 ## `--research-keywords` mode — keyword research
 
 **Consumer-facing** (unlike the two dev-only research modes): it writes only to the consumer's
-`.agent/seo/keywords.md`, never to the skill. Triggered by the `--research-keywords` flag. Builds a
+`.agentstore/seo/keywords.md`, never to the skill. Triggered by the `--research-keywords` flag. Builds a
 scored, ranked keyword list for the site in three steps, and is safe to re-run because the file is a
 **merge target, not a rewrite** (K3 is the idempotency guarantee). `--scan` makes it report the
 proposed list without writing.
 
-**K1 — Harvest candidates from the repo.** First **load the existing `.agent/seo/keywords.md`** (if it
+**K1 — Harvest candidates from the repo.** First **load the existing `.agentstore/seo/keywords.md`** (if it
 exists) and parse its `- <keyword> <score>/10` lines into a set of already-known keywords, keyed by the
 **normalized** form (lowercase, trim, collapse whitespace) — this is the same key K3 upserts on. Then
 reuse Phase 0.2's stack profile to find where the site's content lives and scan it for the terms the
@@ -343,7 +343,7 @@ unavailable, **degrade, don't fail** (exactly as audit defers an unreachable evi
 from repo signals alone (prominence × on-page frequency) and stamp the run
 `browser unavailable — scores are repo-signal estimates only`.
 
-**K3 — Merge idempotently into `.agent/seo/keywords.md`.** Read the existing file if present and parse
+**K3 — Merge idempotently into `.agentstore/seo/keywords.md`.** Read the existing file if present and parse
 each `- <keyword> <score>/10` line into a map keyed by the normalized keyword. **Upsert**: update the
 score on a keyword that already exists (edit the line in place, never add a second one), insert the new
 ones. Re-sort **best → worst** by score, tie-break alphabetically, and write the whole file back under

@@ -141,7 +141,7 @@ uncertain-but-Critical finding scores low and vanishes. So:
   lower a severity because you are unsure - lower the confidence field and keep the severity.**
 - **The emit threshold bends for severity.** Ordinary findings need high confidence to emit
   (>=~0.7-0.8, Anthropic's `/security-review` floor). The **severity-floor classes** - auth, tenant
-  isolation, money, PII, and every project invariant from `.agent/audit-security/rules.md` - emit at
+  isolation, money, PII, and every project invariant from `.agentstore/audit-security/rules.md` - emit at
   *moderate* confidence as `unproven` and escalate, and **may not be dropped for low confidence.**
 
 The sweep (Phase 40) may emit at most `probable` - **only Phase 50's panel sets `confirmed`**, so a

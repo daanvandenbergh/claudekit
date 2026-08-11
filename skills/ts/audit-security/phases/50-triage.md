@@ -1,6 +1,6 @@
 > **Phase 50 - Triage and verification**
 > **Consumes:** `LEDGER` (candidates from 20/30/40), `SURFACE-REGISTER` (10), `ATTEST` (20),
->   `.agent/audit-security/accepted.md`, and the prior `state/` (fingerprints).
+>   `.agentstore/audit-security/accepted.md`, and the prior `state/` (fingerprints).
 > **Produces:** `LEDGER` (admitted) - candidates adjudicated to `admitted` / `rejected`, severity
 >   finalised. **Nothing is deleted.** Read `reference/verification.md` in full first.
 > **Gate:** BLOCKING for Phase 60. **JOIN BARRIER:** does not start until Phase 20 has TERMINATED for
@@ -16,7 +16,7 @@ refuted if uncertain" once zeroed out five genuine bugs). This phase is built ag
 
 ## 50.0 Load prior state (suppression + killed-candidate memory)
 
-Before adjudicating, hydrate from `.agent/audit-security/state/` (`reference/orchestration.md`): the
+Before adjudicating, hydrate from `.agentstore/audit-security/state/` (`reference/orchestration.md`): the
 prior ledger's `refuted` / `accepted-risk` fingerprints, and `memory.jsonl`'s killed candidates. A new
 candidate whose `fingerprint` matches a killed one with an **unchanged `code_hash`** skips
 re-litigation (pre-suppressed as a known FP, still counted); a **changed `code_hash`** re-opens it.
@@ -70,7 +70,7 @@ crown-jewel path can never be rated below its floor - that is the structural def
 reviewer-bias downgrade, and without this step it is inert on the daily path.
 
 Then set final severity from `reference/severity.md` (vendor base + the highest applicable exposure
-class + the anti-downgrade rule; the arithmetic printed). Apply `.agent/audit-security/accepted.md`: a
+class + the anti-downgrade rule; the arithmetic printed). Apply `.agentstore/audit-security/accepted.md`: a
 suppression matches only when its `rule + path + enclosing-symbol` matches **and** the guarded code's
 `code_hash` is unchanged - if the code changed, the suppression does not apply and the finding returns
 tagged `[SUPPRESSION STALE]`. Suppressed findings are **counted** in the report, never invisible.

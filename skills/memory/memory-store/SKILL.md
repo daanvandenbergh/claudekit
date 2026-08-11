@@ -45,7 +45,7 @@ Everything after `/memory-store` is one raw string. Parse it in prose:
    flag is accepted but optional, so a bare `/memory-store <dir>` optimizes). These are the only
    two modes.
 2. **Store directory** (positional, required) - the first non-flag token is the path to the memory
-   folder (e.g. `./memory`, `.agent/memory`). Resolve it to an absolute path. In optimize mode it
+   folder (e.g. `./memory`, `.agentstore/memory`). Resolve it to an absolute path. In optimize mode it
    may point at a subdirectory to scope the pass to that subtree.
 3. **`--keep-raw`** (optional, `--store` only) - force-stash the verbatim input in `_sources/`
    even if it looks reconstructable. Use when the exact bytes are the memory.

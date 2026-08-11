@@ -69,7 +69,7 @@ Everything after `/audit-security` arrives as one raw string. Parse it in prose:
    **but every unfixed High+ finding from the prior ledger is carried forward and re-surfaced**, so a
    Critical can never hide behind "its file was not in this diff." Orthogonal to `--quick`; scanners
    still run whole-repo.
-5. **`--resume`** - resume an interrupted run from `.agent/audit-security/state/` (skip files whose
+5. **`--resume`** - resume an interrupted run from `.agentstore/audit-security/state/` (skip files whose
    `code_hash` is unchanged, re-audit `changed` + `pending`).
 6. **`--budget <tier|tokens>`** - cap spend; the orchestrator spends top-down the risk rank and
    stamps the depth tier reached (T0/T1/T2) on the verdict. Below the always-runs floor
@@ -124,7 +124,7 @@ its steps. That one-way rule is what lets any phase be revised in isolation.
 - `reference/lenses.md` - the per-class review procedures the LLM sweep carries (access-control, injection, web, secrets/crypto, business-logic, AI-surface, supply-chain).
 - `reference/sinks-and-sources.md` - the per-ecosystem dangerous-API catalog the sweep keys on.
 - `reference/verification.md` - the append-only ledger, the 3-role panel, the R1-R7 refutation list, the emit matrix.
-- `reference/rules-format.md` - the `.agent/audit-security/rules.md` spec, the vacuity guard, graduation, bootstrap.
+- `reference/rules-format.md` - the `.agentstore/audit-security/rules.md` spec, the vacuity guard, graduation, bootstrap.
 - `reference/asvs.md` + `reference/asvs-5.0.0.flat.json` - the ASVS 5.0 completeness net (pinned data, never fetched).
 - `reference/cloud-lenses.md` - the SEC-CLOUD family (K8s / IaC / serverless / container), marker-gated; N/A-not-a-finding when no infra is committed.
 - `reference/orchestration.md` - persisted `state/`, the file-ownership partition, `--resume`/`--since`, depth tiers, worker attestation, caching. The reliability + scale anchor.
@@ -133,6 +133,6 @@ its steps. That one-way rule is what lets any phase be revised in isolation.
 - `reference/standards-coverage-map.md` - the ADOPT/REJECT standards table + the OpenCRE cross-map + the finding-tag scheme.
 - `reference/supply-chain-heuristics.md` - the native-builder allowlist, the reachability-downgrade rule, the dependency-confusion/typosquat/license matrix.
 
-The host project maintains its own invariants in `.agent/audit-security/rules.md`; this package's
+The host project maintains its own invariants in `.agentstore/audit-security/rules.md`; this package's
 `rules/audit_security_rules.md` is the `@`-import that makes maintaining it a standing obligation. Run state
-lives in `.agent/audit-security/state/` (gitignored); accepted risks in `.agent/audit-security/accepted.md`.
+lives in `.agentstore/audit-security/state/` (gitignored); accepted risks in `.agentstore/audit-security/accepted.md`.
