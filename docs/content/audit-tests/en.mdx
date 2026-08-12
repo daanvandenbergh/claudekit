@@ -22,7 +22,7 @@ repeatedly: each run finds the next-biggest gap by itself, so no state file is n
 
 ## Install
 
-From your project root, after installing the package (see [Getting started](/getting-started)):
+From your project root, after installing the package (see [Getting started](/getting-started/)):
 
 ```sh
 mkdir -p .claude/skills
@@ -73,9 +73,9 @@ every file.
 ## When to use it
 
 Use `/audit-tests` when the question is coverage: untested code, missing edge cases, "are we fully
-tested?". Use [/audit](/audit) instead to run a full phased pass over one module - security, code
-quality, call-chain logic, and tests together. Use [/audit-security](/audit-security) for a
-whole-project security sweep and [/audit-deep-logic](/audit-deep-logic) for bugs in the seams
+tested?". Use [/audit](/audit/) instead to run a full phased pass over one module - security, code
+quality, call-chain logic, and tests together. Use [/audit-security](/audit-security/) for a
+whole-project security sweep and [/audit-deep-logic](/audit-deep-logic/) for bugs in the seams
 between modules.
 
 ## Examples
@@ -93,5 +93,5 @@ again later and it moves to the next one.
 
 ## Related
 
-- [Skills and rules](/skills-and-rules) - how the symlink and `@`-import mechanisms work.
-- [/audit](/audit) - the phased per-module audit that includes a test-coverage phase.
+- [Skills and rules](/skills-and-rules/) - how the symlink and `@`-import mechanisms work.
+- [/audit](/audit/) - the phased per-module audit that includes a test-coverage phase.

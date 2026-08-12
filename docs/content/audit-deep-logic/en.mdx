@@ -87,11 +87,11 @@ High means do not ship.
 
 ## When to use it
 
-Reach for [/audit](/audit) to harden **one** file or module line by line, and for this when the
+Reach for [/audit](/audit/) to harden **one** file or module line by line, and for this when the
 question is whether the modules compose. The scope rule is sharp: **if a bug is provable by reading
 one file top to bottom, it is out of scope here** and belongs to a single-module pass. It is also not
-a security, i18n, over-engineering, or test-coverage pass - those are [/audit-security](/audit-security)
-and [/audit-tests](/audit-tests). When a sibling single-module audit skill is installed,
+a security, i18n, over-engineering, or test-coverage pass - those are [/audit-security](/audit-security/)
+and [/audit-tests](/audit-tests/). When a sibling single-module audit skill is installed,
 `/audit-deep-logic` defers to that skill's severity file so both reports interoperate.
 
 ## Examples
@@ -117,5 +117,5 @@ Apply the findings and keep a durable, append-only report across sessions:
 
 ## Related
 
-- [/audit](/audit) - the single-module counterpart.
-- [Skills and rules](/skills-and-rules) - how the symlink and `@`-import mechanisms work.
+- [/audit](/audit/) - the single-module counterpart.
+- [Skills and rules](/skills-and-rules/) - how the symlink and `@`-import mechanisms work.

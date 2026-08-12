@@ -106,16 +106,16 @@ ones no generic scanner will ever find - a standing obligation rather than a one
 specifies the format Phase 30 expects: a failure mode, a `✗`/`✓` pair drawn from a real bug, and a
 `hunt` block with a count floor.
 
-Import it like any other rule; see [Rules](/rules). Run state lives in
+Import it like any other rule; see [Rules](/rules/). Run state lives in
 `.agentstore/audit-security/state/` (gitignore it) and accepted risks in
 `.agentstore/audit-security/accepted.md`.
 
 ## When to use it
 
 Use `/audit-security` when you want the whole project checked for security: before a release, after an
-auth, money, tenant or AI change, or when you need a dependency and secret sweep. Use [/audit](/audit)
-instead when you are hardening one module, [/audit-deep-logic](/audit-deep-logic) for cross-module
-logic bugs that are not security, and [/audit-tests](/audit-tests) for test coverage.
+auth, money, tenant or AI change, or when you need a dependency and secret sweep. Use [/audit](/audit/)
+instead when you are hardening one module, [/audit-deep-logic](/audit-deep-logic/) for cross-module
+logic bugs that are not security, and [/audit-tests](/audit-tests/) for test coverage.
 
 ## Examples
 
@@ -133,5 +133,5 @@ logic bugs that are not security, and [/audit-tests](/audit-tests) for test cove
 
 ## Related
 
-- [Skills and rules](/skills-and-rules) - how the symlink and `@`-import mechanisms work.
-- [Getting started](/getting-started) - installing the package and linking your first skill.
+- [Skills and rules](/skills-and-rules/) - how the symlink and `@`-import mechanisms work.
+- [Getting started](/getting-started/) - installing the package and linking your first skill.

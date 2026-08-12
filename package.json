@@ -22,6 +22,6 @@
         "audit"
     ],
     "devDependencies": {
-        "@daanvandenbergh/scribekit": "^1.9.1"
+        "@daanvandenbergh/scribekit": "^2.0.0"
     }
 }

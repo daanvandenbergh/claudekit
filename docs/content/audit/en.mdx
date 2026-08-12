@@ -32,7 +32,7 @@ ln -s ../../node_modules/@daanvandenbergh/claudekit/skills/ts/audit \
 ```
 
 Restart Claude Code afterwards; it scans `.claude/skills/` at startup. The full install walkthrough
-is on [Getting started](/getting-started).
+is on [Getting started](/getting-started/).
 
 ## Usage
 
@@ -95,11 +95,11 @@ which grows as passes find real bugs in your project).
 Reach for `/audit` to harden **one module** line by line, across every category at once. The other
 skills each take a different axis:
 
-- [/audit-security](/audit-security) - whole-project security only, running real scanners
+- [/audit-security](/audit-security/) - whole-project security only, running real scanners
     (osv-scanner, gitleaks, semgrep, trivy) alongside its own review. Report-only by default.
-- [/audit-deep-logic](/audit-deep-logic) - whole-system logic in the seams *between* modules, not
+- [/audit-deep-logic](/audit-deep-logic/) - whole-system logic in the seams *between* modules, not
     inside one.
-- [/audit-tests](/audit-tests) - measures coverage and writes the missing tests, rather than reviewing
+- [/audit-tests](/audit-tests/) - measures coverage and writes the missing tests, rather than reviewing
     code.
 
 ## Examples
@@ -124,5 +124,5 @@ Persist the report so later passes continue the numbering and check for regressi
 
 ## Related
 
-- [Skills and rules](/skills-and-rules) - how skills and rules are referenced, and what ships in each tree.
-- [Getting started](/getting-started) - install the package and link your first skill.
+- [Skills and rules](/skills-and-rules/) - how skills and rules are referenced, and what ships in each tree.
+- [Getting started](/getting-started/) - install the package and link your first skill.
