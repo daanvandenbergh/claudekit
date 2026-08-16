@@ -1,46 +1,19 @@
 ## Workflow Orchestration
 
-### 1. Plan Mode Default
-- Enter plan mode for ANY non-trivial task (3+ steps or architectural decisions)
-- If something goes sideways, STOP and re-plan immediately — don't keep pushing
-- Use plan mode for verification steps, not just building
-- Write detailed specs upfront to reduce ambiguity
-
-### 2. Subagent Strategy
-- Use subagents liberally to keep main context window clean
-- Offload research, exploration, and parallel analysis to subagents
-- For complex problems, throw more compute at it via subagents
-- One task per subagent for focused execution
-
-### 3. Self-Improvement Loop
-- After ANY correction from the user: update `.agentstore/memory/` memory with the pattern, either use skill `/memory-store --store .agentstore/memory/ <data to store>` to store data, or save it to `.agentstore/memory/lessons.md`
-- Write rules for yourself that prevent the same mistake
-- Ruthlessly iterate on these lessons until mistake rate drops
-- Review lessons at session start for relevant project
-
-### 4. Verification Before Done
-- Never mark a task complete without proving it works
-- Diff behavior between main and your changes when relevant
-- Ask yourself: "Would a staff engineer approve this?"
-- Run tests, check logs, demonstrate correctness
-
-### 5. Demand Elegance (Balanced)
-- For non-trivial changes: pause and ask "is there a more elegant way?"
-- If a fix feels hacky: "Knowing everything I know now, implement the elegant solution"
-- Skip this for simple, obvious fixes — don't over-engineer
-- Challenge your own work before presenting it
-
-### 6. Autonomous Bug Fixing
-- When given a bug report: just fix it. Don't ask for hand-holding
-- Point at logs, errors, failing tests — then resolve them
-- Zero context switching required from the user
-- Go fix failing CI tests without being told how
+- **Plan mode for ANY non-trivial task** (3+ steps or an architectural decision), for verification steps
+  too - not just building. If something goes sideways, STOP and re-plan rather than pushing on.
+- **Subagents liberally** to keep the main context clean - research, exploration, parallel analysis. One
+  task per subagent.
+- **After ANY correction from the user**, capture the pattern: `/memory-store --store .agentstore/memory/
+  <data>`, or append to `.agentstore/memory/lessons.md`. Write the rule that prevents the repeat, and
+  review lessons at session start.
+- **Never mark a task complete without proving it works** - run the tests, check the logs, diff the
+  behaviour against main where that is the question. "Would a staff engineer approve this?"
+- **For non-trivial changes, ask once whether there is a more elegant way**, and challenge your own work
+  before presenting it. Skip it for simple obvious fixes.
+- **Given a bug report: just fix it.** Point at the logs, errors and failing tests, then resolve them -
+  no hand-holding round-trip.
 
 ## Task Management
-
-1. **Plan First**: Write plan to `.agentstore/tasks/plans.md` with checkable items  
-2. **Verify Plan**: Check in before starting implementation  
-3. **Track Progress**: Mark items complete as you go  
-4. **Explain Changes**: High-level summary at each step  
-5. **Document Results**: Add review section to `.agentstore/tasks/plans.md`  
-6. **Capture Lessons**: Update `.agentstore/memory/` after corrections, either use skill `/memory-store --store .agentstore/memory/ <data to store>` to store data, or save it to `.agentstore/memory/lessons.md`
+Write the plan to `.agentstore/tasks/plans.md` as checkable items, check in before implementing, mark
+them off as you go with a high-level summary at each step, and add a review section there when done.
