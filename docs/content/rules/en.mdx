@@ -70,12 +70,13 @@ agent quietly files work instead of finishing it.
 
 ## `active_sessions.md`
 
-For repos where several agents work at once. Each session generates an id once with
-`openssl rand -hex 4`, adds a line to `.agentstore/active_sessions.md` with today's date (from
-`date -u +%F`, never guessed) and a task description concrete enough for another agent to spot an
-overlap, then removes that line when the work is handed back. Any read or write of the file also deletes
-every entry older than 7 days, and the agent reads the file before large or cross-cutting edits. For
-multi-agent repos; skip it if only one session ever runs.
+For repos where several agents work at once. Each session owns one file,
+`.agentstore/active_sessions/<task-slug>-<id>.txt` (the id from `openssl rand -hex 4`, generated once and
+reused), holding today's date (from `date -u +%F`, never guessed) and a task description concrete enough
+for another agent to spot an overlap - then deletes that file when the work is handed back. One file per
+session means two agents never clobber each other's entries. Any read or write of the directory also
+deletes every file older than 7 days, and the agent lists the directory before large or cross-cutting
+edits. For multi-agent repos; skip it if only one session ever runs.
 
 ## `ts_coding_standards.md`
 

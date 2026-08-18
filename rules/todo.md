@@ -17,7 +17,7 @@ If neither applies, **do the work**.
 Every one of these has filed an item that should have been a fix:
 - "It touches other files" / "it needs a refactor first" - then touch them, then refactor.
 - "It changes a shared module" / "another session may be editing it" - check
-  `.agentstore/active_sessions.md`; if nobody claimed it, it is yours. Important means careful, not
+  `.agentstore/active_sessions/`; if nobody claimed it, it is yours. Important means careful, not
   hands-off.
 - "It is out of scope" - a bug you *found* while doing the task is in scope. Fixing it is the job.
 - "It needs a design decision" - make it, and say which and why. If it genuinely needs the user, **ask

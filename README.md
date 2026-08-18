@@ -32,7 +32,7 @@ rules/     CLAUDE.md snippets you compose into a project's CLAUDE.md
   core_principles.md        simplicity-first / no-laziness / minimal-impact
   workflow.md               plan-mode, subagents, self-improvement loop, verification, task management
   todo.md                   the deferred-work (TODO.md) convention
-  active_sessions.md        the shared .agentstore/active_sessions.md convention for concurrent agents
+  active_sessions.md        the .agentstore/active_sessions/ one-file-per-session convention for concurrent agents
   ts_coding_standards.md    TypeScript house style (docstrings, no suppression directives)
   ts_modular_coding.md      one module, one domain, one public surface
   audit_security_rules.md   maintaining the project's own silent-failure security invariants (the
