@@ -13,7 +13,3 @@
   before presenting it. Skip it for simple obvious fixes.
 - **Given a bug report: just fix it.** Point at the logs, errors and failing tests, then resolve them -
   no hand-holding round-trip.
-
-## Task Management
-Write the plan to `.agentstore/tasks/plans.md` as checkable items, check in before implementing, mark
-them off as you go with a high-level summary at each step, and add a review section there when done.
