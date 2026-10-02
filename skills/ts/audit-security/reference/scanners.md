@@ -64,11 +64,15 @@ produce a clean row.
 ## osv-scanner (dependency CVEs, every ecosystem)
 
 ```
-osv-scanner scan source -r --show-all-vulns --format=json .   > osv.json ; rc=$?
+# the "show everything" flag was renamed: --all-vulns (v2.4+), --show-all-vulns (v2.1-2.3)
+ALL=$(osv-scanner scan source --help 2>&1 | grep -q -- '--all-vulns ' && echo --all-vulns || echo --show-all-vulns)
+osv-scanner scan source -r "$ALL" --format=json .   > osv.json ; rc=$?
 ```
 
-- **`--show-all-vulns` is MANDATORY** (the flag is `--show-all-vulns`, added in osv-scanner v2.1.0 - NOT
-  `--all-vulns`, which errors "unknown flag" and silently breaks the whole dependency scan). Without it,
+- **The show-all flag is MANDATORY, and its name depends on the version** - pick it from
+  `osv-scanner scan source --help` as above, never hardcode one: v2.4+ lists `--all-vulns` and rejects
+  `--show-all-vulns` ("flag provided but not defined", exit 127); v2.1-2.3 take `--show-all-vulns`. A wrong
+  flag means NO dependency scan (127 = did not run, never clean). Without the flag,
   vulnerabilities osv tags **"unimportant"** (a Debian-style downgrade tag) are hidden from the default
   output while still sitting in the JSON, so the scan lies by omission. (This is a separate axis from *call
   analysis* / "uncalled", which is opt-in and off by default - see the reachability note below.)

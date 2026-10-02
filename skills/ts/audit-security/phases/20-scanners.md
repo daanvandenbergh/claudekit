@@ -19,8 +19,9 @@ recall over the mechanical classes, freeing the LLM sweep for the judgment-heavy
 Everything about invocation, JSON shape, exit codes and noise control is in `reference/scanners.md`.
 The phase-level rules that must hold:
 
-- **osv-scanner** (dependency CVEs) - `scan source -r --show-all-vulns --format=json` (`--show-all-vulns`,
-  not `--all-vulns` which errors). **Exit 128 (no lockfiles) and 129 (API failed) are NOT clean** - they are
+- **osv-scanner** (dependency CVEs) - `scan source -r <show-all flag> --format=json`, the flag picked from
+  `scan source --help` (`--all-vulns` on v2.4+, else `--show-all-vulns` - the wrong one exits 127, no scan;
+  see `reference/scanners.md`). **Exit 128 (no lockfiles) and 129 (API failed) are NOT clean** - they are
   "did not run" and go to `ATTEST` as such, never to the report as "no vulnerabilities". Rank on
   `groups[].max_severity` with an explicit Unknown tier; pull the fix from `...ranges[].events[].fixed`;
   label dev-only via `dependency_groups`.
