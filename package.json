@@ -3,6 +3,10 @@
     "version": "1.4.2",
     "description": "Reusable Claude Code skills (TypeScript audits, whole-project security audit, SEO, agent memory) and CLAUDE.md rule snippets. Content-only, no build step: symlink a skill into .claude/skills and @-import rules into your CLAUDE.md.",
     "license": "UNLICENSED",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/daanvandenbergh/claudekit.git"
+    },
     "author": "Daan van den Bergh",
     "type": "module",
     "files": [
@@ -13,7 +17,8 @@
         "access": "public"
     },
     "scripts": {
-        "push-and-publish": "git add -A && git commit -m 'Updates' && npm version patch && npm publish && git push -u origin main"
+        "push-and-publish": "git add -A && git commit -m 'Updates' && npm run release",
+        "release": "npm version patch && git push -u origin main --follow-tags"
     },
     "keywords": [
         "claude-code",

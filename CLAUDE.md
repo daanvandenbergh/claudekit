@@ -34,6 +34,10 @@ own `CLAUDE.md`; see `README.md`.
 @node_modules/@daanvandenbergh/scribekit/rules/docs_parity.md
 
 ## Releasing
-- Bump `version` in `package.json` and `npm publish` (public scope). No pre-publish build.
+Publishing happens on GitHub, not locally: pushing a `v*` tag runs `.github/workflows/publish.yml`,
+which publishes to npm via trusted publishing (no token, no 2FA). Never `npm publish` locally.
+- `npm run release` - bump the patch version, tag it, push `main` with the tag.
+- Minor/major: `npm version minor` (or `major`), then `git push -u origin main --follow-tags`.
+- A pushed tag is a published version - never push one unasked.
 - Skills are copied/adapted from real projects; keep them stack-agnostic - a skill must not
   assume it runs inside any one repo.
